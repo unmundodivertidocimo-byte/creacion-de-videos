@@ -3,81 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahorrador de Tiempo - Inicio</title>
+    <title>Tengo una Mansión Post-Apocalíptica</title>
     <style>
+        /* ------------------------- */
+        /* RESET Y ESTILOS BASE */
+        /* ------------------------- */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #1a1a1a;
-            color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
+            color: white;
+            /* Ocultamos el scroll lateral que a veces aparece con el contenedor principal */
+            overflow-x: hidden; 
         }
-
-        #main-container {
-            padding: 40px;
-            background-color: #2c2c2c;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            max-width: 90%;
-            width: 400px;
-        }
-
-        h1 {
-            color: #4CAF50; /* Verde brillante para el título principal */
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-
-        .option-button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
+        a {
             text-decoration: none;
             color: white;
-            font-size: 1.2em;
+        }
+
+        /* ------------------------- */
+        /* ENCABEZADO Y BANNER (LA IMAGEN GRANDE) */
+        /* ------------------------- */
+        #header-banner {
+            background-image: url('https://i.imgur.com/uR1l3gL.jpg'); /* Enlace de imagen de ejemplo similar a la tuya */
+            background-size: cover;
+            background-position: center;
+            height: 40vh; /* Altura de la sección del banner */
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        #header-banner::before {
+            /* Overlay oscuro para que el texto resalte mejor */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4); 
+            z-index: 1;
+        }
+
+        #header-title {
+            color: white;
+            font-size: 2.2em;
             font-weight: bold;
-            border-radius: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 2; /* Asegura que el título esté sobre el overlay */
+        }
+        
+        /* ------------------------- */
+        /* SECCIÓN DE CONTENIDO (LOS BLOQUES ROJOS) */
+        /* ------------------------- */
+        #content-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .chapter-block {
+            background-color: #d94242; /* Rojo similar al de la imagen */
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #b33636;
             transition: background-color 0.3s ease;
         }
 
-        /* Estilo para el botón de Capítulos */
-        #chapters-button {
-            background-color: #007bff; /* Azul */
+        .chapter-block:hover {
+            background-color: #b33636;
         }
 
-        #chapters-button:hover {
-            background-color: #0056b3;
+        /* ------------------------- */
+        /* MENÚ LATERAL (Solo CSS decorativo, no funcional en este código) */
+        /* ------------------------- */
+        .sidebar {
+            /* IMPORTANTE: Este sidebar es solo un ejemplo de estilo CSS. 
+               Replicar la funcionalidad de un menú lateral como el de Google Sites requiere más código JS/HTML que está fuera del alcance de este index.
+               Por ahora, solo incluiremos el contenido principal y los enlaces. */
+            display: none; /* Lo ocultamos para enfocarnos en el contenido principal */
         }
 
-        /* Estilo para el botón de Extracción de Texto */
-        #text-extraction-button {
-            background-color: #FFC107; /* Amarillo/Dorado */
-            color: #1a1a1a; /* Texto oscuro para contraste */
-        }
-
-        #text-extraction-button:hover {
-            background-color: #e0a800;
+        /* ------------------------- */
+        /* MEDIA QUERY PARA MÓVILES */
+        /* ------------------------- */
+        @media (max-width: 600px) {
+            #header-title {
+                font-size: 1.8em;
+            }
+            .chapter-block {
+                font-size: 1.5em;
+                padding: 20px 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="main-container">
-        <h1>Ahorrador de Tiempo</h1>
-        
-        <a id="chapters-button" class="option-button" href="capitulo-481.html">
-            📖 Capítulos
-        </a>
-        
-        <a id="text-extraction-button" class="option-button" href="extraccion-texto.html">
-            📝 Extracción de Texto
-        </a>
+
+    <div id="header-banner">
+        <div id="header-title">
+            TENGO UNA MANSION EN UN<br>MUNDO POST APOCALIPTICO
+        </div>
     </div>
+
+    <div id="content-section">
+        
+        <a class="chapter-block" href="capitulo-481.html">
+            CAPITULO 481
+        </a>
+
+        <a class="chapter-block" href="capitulo-482.html">
+            CAPITULO 482
+        </a>
+        
+        <a class="chapter-block" href="capitulo-483.html">
+            CAPITULO 483
+        </a>
+        
+        </div>
+    
 </body>
 </html>
