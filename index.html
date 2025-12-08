@@ -1,0 +1,213 @@
+<style>
+/* -------------------------------------- */
+/* ESTILOS CSS - FIJO Y VISIBLE (Descarga y Auto-Scroll) */
+/* -------------------------------------- */
+    html, body {
+        overflow-x: hidden !important; 
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    *, *:before, *:after {
+        box-sizing: border-box !important;
+    }
+    /* Ocultar elementos nativos de Google Sites */
+    header, .header, #header, .navbar, .masthead, footer, .footer, #footer, .attribution, 
+    #blog-pager, .post-footer, .comments, .sidebar, .region-inner, .column-right-inner, 
+    .column-left-inner, .columns, .layout-inner, .fauxborder-left, .fauxborder-right, 
+    .title-outer, .blog-name, .post-header {
+        display: none !important;
+        height: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+    }
+    .content-outer, .main-outer, .main-inner, #main-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    body {
+        margin: 0;
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+    }
+
+    /* 1. Estilo del Banner superior (FIJO y SIEMPRE VISIBLE) */
+    #top-banner {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100vw !important;
+        background-color: #0d0d0d; 
+        color: #f0f0f0; 
+        padding: 5px 10px;
+        z-index: 1001 !important; 
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        display: flex !important; 
+        justify-content: space-between; 
+        align-items: center;
+        height: 50px; 
+    }
+
+    /* Contenedor de Botones */
+    #control-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    #title-text {
+        font-size: 0.9em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        text-align: center;
+        color: #f0f0f0;
+    }
+
+    /* Visor de manga (RESPONSIVE) */
+    #manga-viewer {
+        width: 100%;
+        max-width: 100%; 
+        margin: 0 auto; 
+        overflow-x: hidden;
+        min-height: 100vh;
+        padding-top: 60px; /* Espacio para la barra superior fija (50px + margen) */
+        padding-bottom: 10px; 
+    }
+    .manga-page {
+        display: block;
+        max-width: 100%; 
+        height: auto; 
+        margin: 0 auto 10px auto; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 2. Estilos para los botones */
+    button, input[type="checkbox"] {
+        padding: 8px; 
+        background-color: #555; 
+        color: white; 
+        border: none; 
+        cursor: pointer; 
+        border-radius: 4px; 
+        white-space: nowrap;
+        font-size: 0.8em;
+    }
+    input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
+
+    /* Estilos específicos de botones en la barra superior */
+    #download-btn-top {
+        padding: 5px 10px;
+        font-weight: bold;
+        background-color: #4CAF50;
+    }
+    #scroll-speed-controls {
+        display: flex;
+        align-items: center;
+        font-size: 0.9em;
+    }
+</style>
+
+<div id="top-banner"> 
+    <div id="control-group">
+        <button id="download-btn-top">⬇️ Descargar Cap. 481</button>
+    </div>
+    
+    <div id="title-text">
+        Capítulo 481
+    </div>
+
+    <div id="control-group">
+        <label id="autoscroll-label">
+            <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
+        </label>
+        <div id="scroll-speed-controls">
+            <label>Velocidad:</label>
+            <input id="scroll-speed" max="10" type="range" value="5" />
+        </div>
+    </div>
+</div>
+
+<main id="manga-viewer">
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo...</div>
+</main>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('manga-viewer');
+        const autoscrollToggle = document.getElementById('autoscroll-toggle');
+        const scrollSpeedRange = document.getElementById('scroll-speed');
+        
+        let scrollInterval;
+
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 481 ⚙️ ---
+        const chapterConfig = {
+            id: 481, 
+            fileUrls: [
+                'https://i.imgur.com/NVkYXz4.jpeg', 
+                'https://i.imgur.com/ZAsHwNs.jpeg', 
+                'https://i.imgur.com/G9yfcwk.jpeg', 
+                'https://i.imgur.com/cXzhkH8.jpeg', 
+                'https://i.imgur.com/QlCtcsI.jpeg', 
+                'https://i.imgur.com/X89IOxN.jpeg', 
+                'https://i.imgur.com/KZh3Ge9.jpeg', 
+                'https://i.imgur.com/82GXJoQ.jpeg', 
+                'https://i.imgur.com/g2mmaen.jpeg', 
+                'https://i.imgur.com/YoKJVMp.jpeg', 
+                'https://i.imgur.com/HeA0EY4.jpeg', 
+                'https://i.imgur.com/tZG3IVq.jpeg' 
+            ],
+            urlDownload: 'https://drive.google.com/file/d/1lTF2NxkpvERo6nXk0COOxb38o0u0RbD7/view?usp=sharing'
+        };
+        // ---------------------------------------------
+
+        const renderChapter = (config) => {
+            viewer.innerHTML = ''; 
+            config.fileUrls.forEach((imageUrl, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page-container';
+                const img = document.createElement('img');
+                img.src = imageUrl; 
+                img.alt = `Capítulo ${config.id} - Página ${index + 3}`;
+                img.className = 'manga-page';
+                img.loading = 'lazy'; 
+                pageDiv.appendChild(img);
+                viewer.appendChild(pageDiv);
+            });
+            window.scrollTo(0, 0); 
+        };
+        
+        // --- Funcionalidad de Auto-Scroll ---
+        const startAutoscroll = (speedValue) => {
+            const intervalTime = 100 - (speedValue * 9); 
+            const scrollAmount = 3; 
+            if (scrollInterval) clearInterval(scrollInterval);
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, scrollAmount);
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    autoscrollToggle.checked = false;
+                    clearInterval(scrollInterval);
+                }
+            }, intervalTime);
+        };
+
+        autoscrollToggle.addEventListener('change', (e) => {
+            if (e.target.checked) { startAutoscroll(scrollSpeedRange.value); } else { if (scrollInterval) clearInterval(scrollInterval); }
+        });
+        scrollSpeedRange.addEventListener('input', (e) => {
+            if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
+        });
+
+        // --- Event listener de Descarga ---
+        document.getElementById('download-btn-top').addEventListener('click', (e) => {
+            window.open(chapterConfig.urlDownload, '_blank');
+        });
+        
+        // Cargar el capítulo al inicio
+        renderChapter(chapterConfig);
+    });
+</script>
