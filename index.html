@@ -3,135 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tengo una Mansión Post-Apocalíptica</title>
+    <title>Ahorrador de Tiempo - Inicio</title>
     <style>
         /* ------------------------- */
-        /* RESET Y ESTILOS BASE */
+        /* 0. RESET y BASE */
         /* ------------------------- */
+        :root {
+            --color-primary: #4CAF50; /* Verde de acento */
+            --color-dark: #121212; /* Fondo muy oscuro */
+            --color-card: #1e1e1e; /* Fondo de tarjetas */
+            --color-text: #f0f0f0;
+            --sidebar-width: 240px;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a;
-            color: white;
-            /* Ocultamos el scroll lateral que a veces aparece con el contenedor principal */
-            overflow-x: hidden; 
+            background-color: var(--color-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            display: flex; /* Permite colocar el sidebar al lado del contenido */
         }
         a {
             text-decoration: none;
-            color: white;
+            color: var(--color-text);
         }
 
         /* ------------------------- */
-        /* ENCABEZADO Y BANNER (LA IMAGEN GRANDE) */
+        /* 1. MENÚ LATERAL FIJO (SIDEBAR) */
         /* ------------------------- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed; 
+            top: 0;
+            left: 0;
+            background-color: var(--color-card);
+            padding-top: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            color: var(--color-primary);
+            font-size: 1.2em;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .sidebar a {
+            padding: 12px 15px;
+            font-size: 1em;
+            color: #ccc;
+            display: block;
+            transition: background-color 0.2s, color 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar a:hover, .sidebar .active {
+            background-color: #2a2a2a;
+            color: white;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        /* ------------------------- */
+        /* 2. CONTENIDO PRINCIPAL */
+        /* ------------------------- */
+        #main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width); /* Deja espacio para el sidebar */
+            padding: 0;
+        }
+
+        /* ENCABEZADO Y BANNER (Fondo grande, más sutil) */
         #header-banner {
-            background-image: url('https://i.imgur.com/uR1l3gL.jpg'); /* Enlace de imagen de ejemplo similar a la tuya */
+            background-image: url('https://i.imgur.com/uR1l3gL.jpg'); /* Imagen de ejemplo */
             background-size: cover;
             background-position: center;
-            height: 40vh; /* Altura de la sección del banner */
-            min-height: 250px;
+            height: 40vh; 
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
             position: relative;
         }
 
         #header-banner::before {
-            /* Overlay oscuro para que el texto resalte mejor */
+            /* Overlay con degradado para un look más cinematográfico */
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.4); 
+            background: linear-gradient(rgba(0, 0, 0, 0.4), var(--color-dark) 90%); 
             z-index: 1;
         }
 
         #header-title {
             color: white;
-            font-size: 2.2em;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            z-index: 2; /* Asegura que el título esté sobre el overlay */
+            font-size: 2.8em;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+            z-index: 2;
+            padding: 0 10px;
+            line-height: 1.2;
+        }
+
+        /* Título del cuerpo de la página */
+        #content-section-title {
+            padding: 20px 30px 10px;
+            font-size: 1.5em;
+            color: var(--color-primary);
+            font-weight: 600;
+            border-bottom: 2px solid #222;
         }
         
-        /* ------------------------- */
-        /* SECCIÓN DE CONTENIDO (LOS BLOQUES ROJOS) */
-        /* ------------------------- */
-        #content-section {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
+        /* SECCIÓN DE BOTONES/TARJETAS DE CAPÍTULO */
+        #chapter-list-section {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Layout de cuadrícula moderno */
+            gap: 20px;
         }
 
-        .chapter-block {
-            background-color: #d94242; /* Rojo similar al de la imagen */
-            color: white;
-            padding: 30px 20px;
+        .chapter-link-block {
+            background-color: var(--color-card);
+            border: 1px solid #333;
+            padding: 25px;
             text-align: center;
-            font-size: 1.8em;
+            font-size: 1.4em;
             font-weight: bold;
-            letter-spacing: 1px;
-            border-bottom: 2px solid #b33636;
-            transition: background-color 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            color: var(--color-text);
         }
 
-        .chapter-block:hover {
-            background-color: #b33636;
-        }
-
-        /* ------------------------- */
-        /* MENÚ LATERAL (Solo CSS decorativo, no funcional en este código) */
-        /* ------------------------- */
-        .sidebar {
-            /* IMPORTANTE: Este sidebar es solo un ejemplo de estilo CSS. 
-               Replicar la funcionalidad de un menú lateral como el de Google Sites requiere más código JS/HTML que está fuera del alcance de este index.
-               Por ahora, solo incluiremos el contenido principal y los enlaces. */
-            display: none; /* Lo ocultamos para enfocarnos en el contenido principal */
+        .chapter-link-block:hover {
+            background-color: #2a2a2a;
+            transform: translateY(-5px); /* Efecto de elevación */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+            color: var(--color-primary);
         }
 
         /* ------------------------- */
-        /* MEDIA QUERY PARA MÓVILES */
+        /* 3. RESPONSIVE (Móviles) */
         /* ------------------------- */
-        @media (max-width: 600px) {
-            #header-title {
-                font-size: 1.8em;
+        @media (max-width: 768px) {
+            body {
+                display: block;
             }
-            .chapter-block {
-                font-size: 1.5em;
-                padding: 20px 10px;
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative; /* Se convierte en una barra superior en móvil */
+                padding-top: 0;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            }
+            .sidebar-header {
+                /* Podemos mantenerlo o usar un icono de menú */
+                display: none; 
+            }
+            .sidebar a {
+                display: inline-block; /* Los enlaces del sidebar se ponen en línea */
+                border-bottom: none;
+                border-right: 1px solid #222;
+            }
+            #main-content {
+                margin-left: 0; 
+            }
+            #header-title {
+                font-size: 2em;
+            }
+            #chapter-list-section {
+                 padding: 20px;
+                 grid-template-columns: 1fr; /* Una columna por tarjeta en móvil */
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="header-banner">
-        <div id="header-title">
-            TENGO UNA MANSION EN UN<br>MUNDO POST APOCALIPTICO
-        </div>
+    <div class="sidebar">
+        <div class="sidebar-header">Ahorrador de Tiempo</div>
+        
+        <a class="active" href="index.html">🏠 Inicio</a>
+        
+        <div class="sidebar-header" style="margin-top: 15px;">Capítulos</div>
+        <a href="capitulo-481.html">Capítulo 481</a>
+        <a href="capitulo-482.html">Capítulo 482</a>
+        <a href="capitulo-483.html">Capítulo 483</a>
+        
+        <div class="sidebar-header" style="margin-top: 15px;">Herramientas</div>
+        <a href="extraccion-texto.html">📝 Extracción de Texto</a>
+        <a href="#">⬇️ Descargas</a>
     </div>
 
-    <div id="content-section">
+    <div id="main-content">
         
-        <a class="chapter-block" href="capitulo-481.html">
-            CAPITULO 481
-        </a>
-
-        <a class="chapter-block" href="capitulo-482.html">
-            CAPITULO 482
-        </a>
-        
-        <a class="chapter-block" href="capitulo-483.html">
-            CAPITULO 483
-        </a>
-        
+        <div id="header-banner">
+            <div id="header-title">
+                TENGO UNA MANSION EN UN<br>MUNDO POST APOCALIPTICO
+            </div>
         </div>
+
+        <div id="content-section-title">
+            Últimos Capítulos
+        </div>
+
+        <div id="chapter-list-section">
+            <a class="chapter-link-block" href="capitulo-483.html">
+                CAPITULO 483 (NUEVO)
+            </a>
+            
+            <a class="chapter-link-block" href="capitulo-482.html">
+                CAPITULO 482
+            </a>
+            
+            <a class="chapter-link-block" href="capitulo-481.html">
+                CAPITULO 481
+            </a>
+            
+            <a class="chapter-link-block" href="#">
+                Ver Índice Completo...
+            </a>
+        </div>
+        
+    </div>
     
 </body>
 </html>
