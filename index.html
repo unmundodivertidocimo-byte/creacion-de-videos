@@ -67,8 +67,8 @@
         opacity: 0.2; 
         transition: opacity 0.3s;
     }
-    /* El JS agrega esta clase al pasar el ratón */
-    .controls-hover {
+    /* Clase para mostrar opacidad 1 al pasar el ratón o al abrir el menú */
+    .controls-hover, .menu-active {
         opacity: 1 !important;
     }
     #scroll-speed-controls {
@@ -89,7 +89,7 @@
         transition: opacity 0.3s;
     }
     
-    /* El JS agrega esta clase cuando el menú está abierto */
+    /* Clase para mostrar opacidad 1 cuando el menú está abierto */
     .menu-active {
         opacity: 1 !important;
     }
@@ -213,8 +213,8 @@
         const scrollSpeedRange = document.getElementById('scroll-speed');
         
         const dropdownMenu = document.getElementById('dropdown-menu'); 
-        const menuContainer = document.getElementById('menu-container'); // Contenedor Superior
-        const bottomControls = document.getElementById('bottom-controls'); // Controles Inferiores
+        const menuContainer = document.getElementById('menu-container'); 
+        const bottomControls = document.getElementById('bottom-controls'); 
         const menuToggleButton = document.getElementById('menu-toggle-btn-top');
         let menuOpen = false; 
         
@@ -225,17 +225,22 @@
             id: 481,
             nextId: 482,
             urlNext: 'capitulo-482.html', 
+            // ENLACES RECUPERADOS DEL CÓDIGO ANTERIOR
             fileUrls: [
-                // Enlaces de prueba FUNCIONALES:
-                'https://i.imgur.com/h07IeGr.jpeg',
-                'https://i.imgur.com/1lvSdZO.jpeg',
-                'https://i.imgur.com/AVSEc91.jpeg',
-                'https://i.imgur.com/ondy8W4.jpeg',
-                'https://i.imgur.com/1WNUgKO.jpeg',
-                'https://i.imgur.com/KXeRDT0.jpeg',
-                'https://i.imgur.com/JPNQ26R.jpeg'
+                'https://i.imgur.com/NVkYXz4.jpeg',
+                'https://i.imgur.com/ZAsHwNs.jpeg',
+                'https://i.imgur.com/G9yfcwk.jpeg',
+                'https://i.imgur.com/cXzhkH8.jpeg',
+                'https://i.imgur.com/QlCtcsI.jpeg',
+                'https://i.imgur.com/X89IOxN.jpeg',
+                'https://i.imgur.com/KZh3Ge9.jpeg',
+                'https://i.imgur.com/82GXJoQ.jpeg',
+                'https://i.imgur.com/g2mmaen.jpeg',
+                'https://i.imgur.com/YoKJVMp.jpeg',
+                'https://i.imgur.com/HeA0EY4.jpeg',
+                'https://i.imgur.com/tZG3IVq.jpeg'
             ],
-            urlDownload: 'https://drive.google.com/file/d/download-link-481/view?usp=sharing' 
+            urlDownload: 'https://drive.google.com/file/d/1lTF2NxkpvERo6nXk0COOxb38o0u0RbD7/view?usp=sharing'
         };
         // ---------------------------------------------
 
@@ -245,29 +250,28 @@
             menuOpen = !menuOpen;
             if (menuOpen) {
                 dropdownMenu.classList.add('visible'); 
-                menuContainer.classList.add('menu-active'); // Fuerza opacidad 1 al menú superior
-                bottomControls.classList.add('menu-active'); // Fuerza opacidad 1 al menú inferior
+                menuContainer.classList.add('menu-active'); 
+                bottomControls.classList.add('menu-active'); 
             } else {
                 dropdownMenu.classList.remove('visible');
-                menuContainer.classList.remove('menu-active'); // Permite que vuelva a la opacidad 0.2
-                bottomControls.classList.remove('menu-active'); // Permite que vuelva a la opacidad 0.2
+                menuContainer.classList.remove('menu-active'); 
+                bottomControls.classList.remove('menu-active'); 
             }
         };
         
         menuToggleButton.addEventListener('click', toggleMenu);
 
-        // Hace que los controles inferiores se muestren al pasar el ratón (incluso si el menú está cerrado)
+        // Hace que los controles inferiores se muestren al pasar el ratón (modo no-distracción)
         bottomControls.addEventListener('mouseenter', () => {
             bottomControls.classList.add('controls-hover');
         });
         bottomControls.addEventListener('mouseleave', () => {
-            // Solo si el menú superior NO está abierto, volvemos a la opacidad baja
             if (!menuOpen) {
                 bottomControls.classList.remove('controls-hover');
             }
         });
 
-        // Hace que el botón superior se muestre al pasar el ratón (incluso si el menú está cerrado)
+        // Hace que el botón superior se muestre al pasar el ratón (modo no-distracción)
         menuContainer.addEventListener('mouseenter', () => {
             menuContainer.classList.add('controls-hover');
         });
