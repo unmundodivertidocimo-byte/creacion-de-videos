@@ -1,29 +1,16 @@
 <style>
 /* -------------------------------------- */
-/* ESTILOS CSS - FIJO Y VISIBLE (Descarga y Auto-Scroll) */
+/* ESTILOS CSS - MENÚ SUPERIOR Y CONTROLES INFERIORES */
 /* -------------------------------------- */
     html, body {
         overflow-x: hidden !important; 
-        width: 100% !important;
+        width: 100% !important; 
         margin: 0 !important;
         padding: 0 !important;
+        min-width: 100% !important; 
     }
     *, *:before, *:after {
         box-sizing: border-box !important;
-    }
-    /* Ocultar elementos nativos de Google Sites */
-    header, .header, #header, .navbar, .masthead, footer, .footer, #footer, .attribution, 
-    #blog-pager, .post-footer, .comments, .sidebar, .region-inner, .column-right-inner, 
-    .column-left-inner, .columns, .layout-inner, .fauxborder-left, .fauxborder-right, 
-    .title-outer, .blog-name, .post-header {
-        display: none !important;
-        height: 0 !important;
-        visibility: hidden !important;
-        max-height: 0 !important;
-    }
-    .content-outer, .main-outer, .main-inner, #main-wrapper {
-        padding: 0 !important;
-        margin: 0 !important;
     }
     body {
         margin: 0;
@@ -32,60 +19,112 @@
         font-family: Arial, sans-serif;
         min-height: 100vh;
     }
-
-    /* 1. Estilo del Banner superior (FIJO y SIEMPRE VISIBLE) */
-    #top-banner {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100vw !important;
-        background-color: #0d0d0d; 
-        color: #f0f0f0; 
-        padding: 5px 10px;
-        z-index: 1001 !important; 
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        display: flex !important; 
-        justify-content: space-between; 
-        align-items: center;
-        height: 50px; 
+    /* Ocultar elementos nativos de plataformas externas si se usan */
+    header, footer, .navbar, .masthead, .attribution {
+        display: none !important;
+        height: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
     }
 
-    /* Contenedor de Botones */
-    #control-group {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-    #title-text {
-        font-size: 0.9em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-grow: 1;
-        text-align: center;
-        color: #f0f0f0;
-    }
-
-    /* Visor de manga (RESPONSIVE) */
+    /* 1. Visor de Manga (Responsive) */
     #manga-viewer {
         width: 100%;
         max-width: 100%; 
         margin: 0 auto; 
         overflow-x: hidden;
         min-height: 100vh;
-        padding-top: 60px; /* Espacio para la barra superior fija (50px + margen) */
-        padding-bottom: 10px; 
+        padding-top: 5px; 
+        padding-bottom: 70px; /* Espacio para los controles inferiores */
     }
     .manga-page {
         display: block;
         max-width: 100%; 
+        width: 100%; 
         height: auto; 
         margin: 0 auto 10px auto; 
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
+    
+    /* 2. Controles de Auto-Scroll (Fijos en la parte inferior) */
+    #bottom-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: #0d0d0d;
+        color: #f0f0f0;
+        padding: 8px 15px;
+        z-index: 1000;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center; /* Centrar los controles */
+        align-items: center;
+        gap: 15px;
+    }
+    #scroll-speed-controls {
+        display: flex;
+        align-items: center;
+        font-size: 0.9em;
+    }
 
-    /* 2. Estilos para los botones */
+    /* 3. Menú Superior (Centrado) */
+    #menu-container {
+        position: fixed;
+        top: 10px; /* Separación de la parte superior */
+        left: 50%;
+        transform: translateX(-50%); /* Centrar horizontalmente */
+        z-index: 1001; 
+    }
+    
+    /* Botón de Menú Superior (☰) */
+    #menu-toggle-btn-top {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        /* IMPORTANTE: Transición para el Modo No-Distracción */
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    /* 4. Barra de Despliegue (Flotante) */
+    #dropdown-menu { 
+        position: absolute; 
+        top: 0; /* Empieza justo donde está el botón */
+        left: 50%;
+        transform: translate(-50%, 0); 
+        width: max-content; 
+        min-width: 250px;
+        background-color: #1c1c1c; 
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+        flex-direction: column;
+        gap: 10px;
+        display: flex;
+        
+        /* Oculto por defecto */
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .visible { 
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translate(-50%, 100%) !important; /* Mueve hacia abajo después del botón */
+        /* Agregamos padding extra para asegurar espacio debajo del botón */
+        padding-top: 50px; 
+    }
+
+    /* Estilos de botones generales */
     button, input[type="checkbox"] {
         padding: 8px; 
         background-color: #555; 
@@ -94,39 +133,51 @@
         cursor: pointer; 
         border-radius: 4px; 
         white-space: nowrap;
-        font-size: 0.8em;
+        font-size: 0.9em;
     }
     input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
 
-    /* Estilos específicos de botones en la barra superior */
-    #download-btn-top {
-        padding: 5px 10px;
+    #download-btn, #next-chapter-btn {
+        padding: 10px 15px;
         font-weight: bold;
-        background-color: #4CAF50;
+        flex-grow: 1;
     }
-    #scroll-speed-controls {
+    #download-btn { background-color: #007bff; }
+    #download-btn:hover { background-color: #0056b3; }
+    #next-chapter-btn { background-color: #4CAF50; }
+    #next-chapter-btn:hover { background-color: #388e3c; }
+
+    /* Estilo del título dentro del menú */
+    #menu-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 1px solid #444;
+        padding-bottom: 8px;
+        margin-bottom: 5px;
+    }
+    
+    /* Contenedor de botones en el menú desplegable */
+    #menu-buttons {
         display: flex;
-        align-items: center;
-        font-size: 0.9em;
+        gap: 10px;
+        width: 100%;
     }
 </style>
 
-<div id="top-banner"> 
-    <div id="control-group">
-        <button id="download-btn-top">⬇️ Descargar Cap. 481</button>
-    </div>
-    
-    <div id="title-text">
-        Capítulo 481
-    </div>
+<div id="menu-container">
+    <button id="menu-toggle-btn-top">☰</button>
 
-    <div id="control-group">
-        <label id="autoscroll-label">
-            <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
-        </label>
-        <div id="scroll-speed-controls">
-            <label>Velocidad:</label>
-            <input id="scroll-speed" max="10" type="range" value="5" />
+    <div id="dropdown-menu"> 
+        
+        <div id="menu-title">Capítulo 481</div>
+
+        <div id="menu-buttons">
+            <button id="next-chapter-btn">➡️ Cap. Siguiente (482)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="download-btn">⬇️ Descargar Cap. 481</button>
         </div>
     </div>
 </div>
@@ -135,6 +186,15 @@
     <div style="padding: 20px; text-align: center;">Cargando Capítulo...</div>
 </main>
 
+<div id="bottom-controls">
+    <label id="autoscroll-label">
+        <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
+    </label>
+    <div id="scroll-speed-controls">
+        <label>Velocidad:</label>
+        <input id="scroll-speed" max="10" type="range" value="5" />
+    </div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -142,37 +202,64 @@
         const autoscrollToggle = document.getElementById('autoscroll-toggle');
         const scrollSpeedRange = document.getElementById('scroll-speed');
         
+        const dropdownMenu = document.getElementById('dropdown-menu'); 
+        const menuToggleButton = document.getElementById('menu-toggle-btn-top');
+        let menuOpen = false; 
+        
         let scrollInterval;
 
         // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 481 ⚙️ ---
         const chapterConfig = {
-            id: 481, 
+            id: 481,
+            nextId: 482,
+            urlNext: 'capitulo-482.html', // Asegúrate de que este archivo exista en tu repositorio
             fileUrls: [
-                'https://i.imgur.com/NVkYXz4.jpeg', 
-                'https://i.imgur.com/ZAsHwNs.jpeg', 
-                'https://i.imgur.com/G9yfcwk.jpeg', 
-                'https://i.imgur.com/cXzhkH8.jpeg', 
-                'https://i.imgur.com/QlCtcsI.jpeg', 
-                'https://i.imgur.com/X89IOxN.jpeg', 
-                'https://i.imgur.com/KZh3Ge9.jpeg', 
-                'https://i.imgur.com/82GXJoQ.jpeg', 
-                'https://i.imgur.com/g2mmaen.jpeg', 
-                'https://i.imgur.com/YoKJVMp.jpeg', 
-                'https://i.imgur.com/HeA0EY4.jpeg', 
-                'https://i.imgur.com/tZG3IVq.jpeg' 
+                // *** EJEMPLO: Reemplaza estos enlaces con los enlaces reales del Capítulo 481 ***
+                'https://i.imgur.com/image-481-01.jpeg', 
+                'https://i.imgur.com/image-481-02.jpeg',
+                'https://i.imgur.com/image-481-03.jpeg',
+                'https://i.imgur.com/image-481-04.jpeg',
+                'https://i.imgur.com/image-481-05.jpeg',
+                'https://i.imgur.com/image-481-06.jpeg',
+                'https://i.imgur.com/image-481-07.jpeg',
+                'https://i.imgur.com/image-481-08.jpeg'
             ],
-            urlDownload: 'https://drive.google.com/file/d/1lTF2NxkpvERo6nXk0COOxb38o0u0RbD7/view?usp=sharing'
+            urlDownload: 'https://drive.google.com/file/d/download-link-481/view?usp=sharing' 
         };
         // ---------------------------------------------
 
+        // --- LÓGICA DEL MENÚ SUPERIOR (Modo No-Distracción) ---
+        const toggleMenu = () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                dropdownMenu.classList.add('visible'); 
+            } else {
+                dropdownMenu.classList.remove('visible');
+            }
+        };
+        
+        menuToggleButton.addEventListener('click', toggleMenu);
+
+        // Opcional: Cerrar menú al hacer clic en cualquier parte fuera del menú
+        document.addEventListener('click', (e) => {
+            if (menuOpen && !dropdownMenu.contains(e.target) && e.target !== menuToggleButton) {
+                toggleMenu();
+            }
+        });
+        
+        // --- Renderizado del Capítulo ---
         const renderChapter = (config) => {
             viewer.innerHTML = ''; 
+            if (config.fileUrls.length === 0) {
+                 viewer.innerHTML = '<div style="padding: 50px; text-align: center; color: #f0f0f0;">⚠️ ADVERTENCIA: No hay enlaces de imágenes configurados.</div>';
+                 return;
+            }
             config.fileUrls.forEach((imageUrl, index) => {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page-container';
                 const img = document.createElement('img');
                 img.src = imageUrl; 
-                img.alt = `Capítulo ${config.id} - Página ${index + 3}`;
+                img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
                 img.className = 'manga-page';
                 img.loading = 'lazy'; 
                 pageDiv.appendChild(img);
@@ -202,12 +289,16 @@
             if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
         });
 
-        // --- Event listener de Descarga ---
-        document.getElementById('download-btn-top').addEventListener('click', (e) => {
+        // --- Event listeners de Botones ---
+        document.getElementById('download-btn').addEventListener('click', (e) => {
             window.open(chapterConfig.urlDownload, '_blank');
         });
         
-        // Cargar el capítulo al inicio
+        document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
+             // Redirige al siguiente archivo HTML en el mismo repositorio
+            window.location.href = chapterConfig.urlNext;
+        });
+        
         renderChapter(chapterConfig);
     });
 </script>
