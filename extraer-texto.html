@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extractor de Texto de Cómics (Gemini)</title>
+    <style>
+        /* CSS: Estilos */
+        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
+        #comic-transcriber-container {
+            max-width: 800px; margin: 40px auto; padding: 30px;
+            border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        h2 { color: #1a73e8; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
+        .input-section, .output-section, .image-preview {
+            margin-bottom: 25px; padding: 20px; border: 1px solid #ddd;
+            border-radius: 8px; background-color: #f9f9f9;
+        }
+        #imageInput { padding: 10px; border: 1px solid #ccc; border-radius: 4px; display: block; width: 100%; box-sizing: border-box; }
+        #extractButton {
+            background-color: #007bff; color: white; padding: 12px 20px; border: none;
+            border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%;
+            transition: background-color 0.3s;
+        }
+        #extractButton:hover:not(:disabled) { background-color: #0056b3; }
+        #extractButton:disabled { background-color: #a0c3ff; cursor: not-allowed; }
+        #outputText {
+            width: 100%; min-height: 300px; padding: 15px; box-sizing: border-box;
+            border: 1px solid #ccc; border-radius: 4px; resize: vertical;
+            font-family: 'Courier New', monospace; line-height: 1.4;
+        }
+        .download-buttons button {
+            background-color: #28a745; color: white; padding: 10px 15px; border: none;
+            border-radius: 4px; cursor: pointer; margin-right: 15px; transition: background-color 0.3s;
+        }
+        .download-buttons button:hover:not(:disabled) { background-color: #1e7e34; }
+        .download-buttons button:disabled { background-color: #b3dfc9; cursor: not-allowed; }
+        #previewContainer { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .image-preview img { max-width: 100px; max-height: 100px; border: 2px solid #ccc; border-radius: 4px; object-fit: cover; }
+        #loadingMessage { color: orange; font-weight: bold; margin-top: 15px; }
+        #errorMessage { color: red; font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div id="comic-transcriber-container">
+    <h2>Extractor de Texto de Manhuas/Cómics</h2>
+    <p>Sube tus imágenes en orden para extraer el texto del diálogo y la narración.</p>
+    
+    <div class="input-section">
+        <h3>Paso 1: Seleccionar Imágenes (en orden)</h3>
+        <input type="file" id="imageInput" accept="image/*" multiple>
+    </div>
+
+    <div class="image-preview">
+        <h3>Vista Previa:</h3>
+        <div id="previewContainer"></div>
+        <p id="imageCount">0 imágenes seleccionadas.</p>
+    </div>
+
+    <div class="input-section">
+        <h3>Paso 2: Extraer Texto</h3>
+        <button id="extractButton" disabled>Extraer Texto de las Imágenes</button>
+        <div id="loadingMessage" style="display:none;">Analizando imágenes con Gemini... Esto puede tomar unos segundos.</div>
+        <div id="errorMessage" style="display:none;"></div>
+    </div>
+
+    <div class="output-section">
+        <h3>Paso 3: Resultado del Texto Extraído</h3>
+        <textarea id="outputText" readonly placeholder="El texto extraído aparecerá aquí..."></textarea>
+        <div class="download-buttons" style="margin-top: 15px;">
+            <button id="downloadTxtButton" disabled>Descargar como .TXT</button>
+            <button id="downloadSrtButton" disabled>Descargar como .SRT (Subtítulos)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURACIÓN Y CLAVE API (CLAVE INTEGRADA) ---
+    const GEMINI_API_KEY = 'AIzaSyD3Qtd8e6dYC2kJIoQxViihXnRIpm-xWmM'; 
+    const GEMINI_MODEL = 'gemini-2.5-flash';
+    // ----------------------------------------------------
+
+    const imageInput = document.getElementById('imageInput');
+    const extractButton = document.getElementById('extractButton');
+    const outputText = document.getElementById('outputText');
+    const previewContainer = document.getElementById('previewContainer');
+    const imageCountDisplay = document.getElementById('imageCount');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const errorMessageDisplay = document.getElementById('errorMessage');
+    const downloadTxtButton = document.getElementById('downloadTxtButton');
+    const downloadSrtButton = document.getElementById('downloadSrtButton');
+
+    // Muestra errores en el cuadro rojo
+    function displayError(message) {
+        errorMessageDisplay.textContent = message;
+        errorMessageDisplay.style.display = 'block';
+    }
+
+    // Oculta errores
+    function hideError() {
+        errorMessageDisplay.style.display = 'none';
+    }
+
+    function fileToGenerativePart(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve({
+                    inlineData: {
+                        data: reader.result.split(',')[1],
+                        mimeType: file.type,
+                    },
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    imageInput.addEventListener('change', () => {
+        previewContainer.innerHTML = '';
+        const files = Array.from(imageInput.files);
+        
+        imageCountDisplay.textContent = `${files.length} imágenes seleccionadas.`;
+        extractButton.disabled = files.length === 0;
+        outputText.value = '';
+        downloadTxtButton.disabled = true;
+        downloadSrtButton.disabled = true;
+        hideError();
+
+        files.forEach(file => {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = file.name;
+            previewContainer.appendChild(img);
+        });
+    });
+
+    extractButton.addEventListener('click', async () => {
+        const files = Array.from(imageInput.files);
+        if (files.length === 0) return;
+
+        extractButton.disabled = true;
+        loadingMessage.style.display = 'block';
+        outputText.value = 'Procesando...';
+        downloadTxtButton.disabled = true;
+        downloadSrtButton.disabled = true;
+        hideError();
+
+        try {
+            const imageParts = await Promise.all(files.map(fileToGenerativePart));
+            
+            const prompt = `Analiza estas ${files.length} imágenes de cómic o manhua en el orden en que se subieron. Extrae todo el texto del diálogo y la narración. Evita cualquier texto de anuncios, nombres de artistas o marcas de agua. Presenta el texto extraído en una lista simple, con cada diálogo o bloque de texto en una nueva línea. No añadas ninguna introducción ni conclusión, solo el texto puro.`;
+            
+            const contents = [{
+                role: "user",
+                parts: [...imageParts, { text: prompt }]
+            }];
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents })
+            });
+
+            // Leer el cuerpo de la respuesta para obtener detalles del error
+            const data = await response.json();
+
+            if (response.status !== 200 || !data.candidates || data.candidates.length === 0) {
+                let errorMsg = 'Error al extraer el texto. ';
+                
+                if (data.error && data.error.message) {
+                    // Muestra el error específico de la API
+                    errorMsg += `Mensaje de la API: ${data.error.message}.`;
+                    console.error("Error detallado de la API:", data.error.message);
+                } else if (response.status === 400) {
+                    errorMsg += "Error 400: Solicitud incorrecta (clave inválida o formato de datos).";
+                } else if (response.status === 403) {
+                    errorMsg += "Error 403: Acceso Denegado. ¡Debes añadir tu dominio de GitHub a las restricciones de la clave API!";
+                } else {
+                    errorMsg += `Código de estado HTTP: ${response.status}.`;
+                }
+
+                outputText.value = 'Fallo en la extracción. Revisa la Consola del navegador para más detalles.';
+                displayError(errorMsg);
+                return; // Detener la ejecución
+            }
+
+            // Procesamiento exitoso
+            const extractedText = data.candidates[0].content.parts[0].text.trim();
+            const cleanText = extractedText
+                                .split('\n')
+                                .map(line => line.replace(/^(\*|\-|\d+\.|\s*)\s*/, '').trim())
+                                .filter(line => line.length > 0)
+                                .join('\n');
+                                
+            outputText.value = cleanText;
+            downloadTxtButton.disabled = false;
+            downloadSrtButton.disabled = false;
+
+        } catch (error) {
+            console.error('Error de red o conexión:', error);
+            displayError(`Error de conexión: ${error.message}. Verifica tu conexión a internet o la URL del API.`);
+            outputText.value = 'Fallo en la conexión. Revisa la Consola.';
+        } finally {
+            extractButton.disabled = false;
+            loadingMessage.style.display = 'none';
+        }
+    });
+    
+    // Funciones de descarga
+    function downloadText(content, filename, type) {
+        const blob = new Blob([content], { type: type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    downloadTxtButton.addEventListener('click', () => {
+        const content = outputText.value;
+        if (content) { downloadText(content, 'texto_extraido.txt', 'text/plain'); }
+    });
+
+    downloadSrtButton.addEventListener('click', () => {
+        const lines = outputText.value.split('\n').filter(line => line.trim() !== '');
+        let srtContent = '';
+        let timeIndex = 1;
+        let timeOffset = 0;
+        
+        lines.forEach((line) => {
+            const start = timeOffset;
+            const end = timeOffset + 2000;
+            
+            const formatTime = (ms) => {
+                const totalSeconds = Math.floor(ms / 1000);
+                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+                const milliseconds = String(ms % 1000)).padStart(3, '0');
+                return `${hours}:${minutes}:${seconds},${milliseconds}`;
+            };
+
+            srtContent += `${timeIndex}\n`;
+            srtContent += `${formatTime(start)} --> ${formatTime(end)}\n`;
+            srtContent += `${line}\n\n`;
+            
+            timeIndex++;
+            timeOffset += 2000;
+        });
+
+        if (srtContent) { downloadText(srtContent, 'dialogos_extraidos.srt', 'text/srt'); }
+    });
+</script>
+
+</body>
+</html>
