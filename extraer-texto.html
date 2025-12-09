@@ -3,84 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extractor de Texto de Cómics (Gemini)</title>
+    <title>Extractor de Texto de Cómics - Simple</title>
     <style>
-        /* CSS: Estilos */
+        /* CSS para que se vea bien y sea responsive */
         body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
-        #comic-transcriber-container {
-            max-width: 800px; margin: 40px auto; padding: 30px;
-            border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
-        }
+        #container { max-width: 800px; margin: 40px auto; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); background-color: #ffffff; }
         h2 { color: #1a73e8; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 20px; }
-        .input-section, .output-section, .image-preview {
-            margin-bottom: 25px; padding: 20px; border: 1px solid #ddd;
-            border-radius: 8px; background-color: #f9f9f9;
-        }
+        .section { margin-bottom: 25px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; }
         #imageInput { padding: 10px; border: 1px solid #ccc; border-radius: 4px; display: block; width: 100%; box-sizing: border-box; }
-        #extractButton {
-            background-color: #007bff; color: white; padding: 12px 20px; border: none;
-            border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%;
-            transition: background-color 0.3s;
-        }
-        #extractButton:hover:not(:disabled) { background-color: #0056b3; }
+        #extractButton { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; transition: background-color 0.3s; }
         #extractButton:disabled { background-color: #a0c3ff; cursor: not-allowed; }
-        #outputText {
-            width: 100%; min-height: 300px; padding: 15px; box-sizing: border-box;
-            border: 1px solid #ccc; border-radius: 4px; resize: vertical;
-            font-family: 'Courier New', monospace; line-height: 1.4;
-        }
-        .download-buttons button {
-            background-color: #28a745; color: white; padding: 10px 15px; border: none;
-            border-radius: 4px; cursor: pointer; margin-right: 15px; transition: background-color 0.3s;
-        }
-        .download-buttons button:hover:not(:disabled) { background-color: #1e7e34; }
-        .download-buttons button:disabled { background-color: #b3dfc9; cursor: not-allowed; }
-        #previewContainer { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-        .image-preview img { max-width: 100px; max-height: 100px; border: 2px solid #ccc; border-radius: 4px; object-fit: cover; }
-        #loadingMessage { color: orange; font-weight: bold; margin-top: 15px; }
-        #errorMessage { color: red; font-weight: bold; margin-top: 15px; }
+        #outputText { width: 100%; min-height: 300px; padding: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; resize: vertical; }
+        #loadingMessage { color: orange; font-weight: bold; margin-top: 15px; display: none; }
+        .download-buttons button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-right: 15px; }
     </style>
 </head>
 <body>
 
-<div id="comic-transcriber-container">
-    <h2>Extractor de Texto de Manhuas/Cómics</h2>
-    <p>Sube tus imágenes en orden para extraer el texto del diálogo y la narración.</p>
+<div id="container">
+    <h2>Extractor de Texto de Cómics (v. Simple)</h2>
+    <p>Sube tus imágenes en orden para extraer el texto.</p>
     
-    <div class="input-section">
-        <h3>Paso 1: Seleccionar Imágenes (en orden)</h3>
+    <div class="section">
+        <h3>1. Seleccionar Imágenes</h3>
         <input type="file" id="imageInput" accept="image/*" multiple>
-    </div>
-
-    <div class="image-preview">
-        <h3>Vista Previa:</h3>
-        <div id="previewContainer"></div>
+        <div id="previewContainer" style="margin-top:10px;"></div>
         <p id="imageCount">0 imágenes seleccionadas.</p>
     </div>
 
-    <div class="input-section">
-        <h3>Paso 2: Extraer Texto</h3>
-        <button id="extractButton" disabled>Extraer Texto de las Imágenes</button>
-        <div id="loadingMessage" style="display:none;">Analizando imágenes con Gemini... Esto puede tomar unos segundos.</div>
-        <div id="errorMessage" style="display:none;"></div>
+    <div class="section">
+        <h3>2. Extraer Texto</h3>
+        <button id="extractButton" disabled>Extraer Texto</button>
+        <div id="loadingMessage">Analizando imágenes con Gemini...</div>
+        <p id="statusMessage" style="color:red; font-weight:bold;"></p>
     </div>
 
-    <div class="output-section">
-        <h3>Paso 3: Resultado del Texto Extraído</h3>
+    <div class="section">
+        <h3>3. Resultado</h3>
         <textarea id="outputText" readonly placeholder="El texto extraído aparecerá aquí..."></textarea>
         <div class="download-buttons" style="margin-top: 15px;">
-            <button id="downloadTxtButton" disabled>Descargar como .TXT</button>
-            <button id="downloadSrtButton" disabled>Descargar como .SRT (Subtítulos)</button>
+            <button id="downloadTxtButton" disabled>Descargar .TXT</button>
+            <button id="downloadSrtButton" disabled>Descargar .SRT</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- CONFIGURACIÓN Y CLAVE API (CLAVE INTEGRADA) ---
+    // --- CLAVE API INTEGRADA ---
     const GEMINI_API_KEY = 'AIzaSyD3Qtd8e6dYC2kJIoQxViihXnRIpm-xWmM'; 
     const GEMINI_MODEL = 'gemini-2.5-flash';
-    // ----------------------------------------------------
+    // ---------------------------
 
     const imageInput = document.getElementById('imageInput');
     const extractButton = document.getElementById('extractButton');
@@ -88,21 +60,29 @@
     const previewContainer = document.getElementById('previewContainer');
     const imageCountDisplay = document.getElementById('imageCount');
     const loadingMessage = document.getElementById('loadingMessage');
-    const errorMessageDisplay = document.getElementById('errorMessage');
+    const statusMessage = document.getElementById('statusMessage');
     const downloadTxtButton = document.getElementById('downloadTxtButton');
     const downloadSrtButton = document.getElementById('downloadSrtButton');
 
-    // Muestra errores en el cuadro rojo
-    function displayError(message) {
-        errorMessageDisplay.textContent = message;
-        errorMessageDisplay.style.display = 'block';
-    }
+    // 1. Función de Carga de Archivos
+    imageInput.addEventListener('change', () => {
+        previewContainer.innerHTML = '';
+        const files = Array.from(imageInput.files);
+        
+        imageCountDisplay.textContent = `${files.length} imágenes seleccionadas.`;
+        extractButton.disabled = files.length === 0;
+        statusMessage.textContent = ''; // Limpia mensajes de error
+        
+        files.forEach(file => {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.style.maxWidth = '80px';
+            img.style.marginRight = '5px';
+            previewContainer.appendChild(img);
+        });
+    });
 
-    // Oculta errores
-    function hideError() {
-        errorMessageDisplay.style.display = 'none';
-    }
-
+    // Función de ayuda para convertir el archivo de imagen a base64
     function fileToGenerativePart(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -118,25 +98,7 @@
         });
     }
 
-    imageInput.addEventListener('change', () => {
-        previewContainer.innerHTML = '';
-        const files = Array.from(imageInput.files);
-        
-        imageCountDisplay.textContent = `${files.length} imágenes seleccionadas.`;
-        extractButton.disabled = files.length === 0;
-        outputText.value = '';
-        downloadTxtButton.disabled = true;
-        downloadSrtButton.disabled = true;
-        hideError();
-
-        files.forEach(file => {
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(file);
-            img.alt = file.name;
-            previewContainer.appendChild(img);
-        });
-    });
-
+    // 2. Función de Extracción con API
     extractButton.addEventListener('click', async () => {
         const files = Array.from(imageInput.files);
         if (files.length === 0) return;
@@ -144,14 +106,11 @@
         extractButton.disabled = true;
         loadingMessage.style.display = 'block';
         outputText.value = 'Procesando...';
-        downloadTxtButton.disabled = true;
-        downloadSrtButton.disabled = true;
-        hideError();
+        statusMessage.textContent = ''; 
 
         try {
             const imageParts = await Promise.all(files.map(fileToGenerativePart));
-            
-            const prompt = `Analiza estas ${files.length} imágenes de cómic o manhua en el orden en que se subieron. Extrae todo el texto del diálogo y la narración. Evita cualquier texto de anuncios, nombres de artistas o marcas de agua. Presenta el texto extraído en una lista simple, con cada diálogo o bloque de texto en una nueva línea. No añadas ninguna introducción ni conclusión, solo el texto puro.`;
+            const prompt = `Analiza estas ${files.length} imágenes de cómic/manhua en orden. Extrae todo el texto del diálogo y la narración. Evita anuncios. Presenta el texto extraído en una lista simple, una frase o bloque por línea. No añadas introducción, solo el texto puro.`;
             
             const contents = [{
                 role: "user",
@@ -164,31 +123,23 @@
                 body: JSON.stringify({ contents })
             });
 
-            // Leer el cuerpo de la respuesta para obtener detalles del error
             const data = await response.json();
 
             if (response.status !== 200 || !data.candidates || data.candidates.length === 0) {
-                let errorMsg = 'Error al extraer el texto. ';
-                
+                // Manejo de error claro para el usuario
+                let errorMsg = 'Error en la API. ';
                 if (data.error && data.error.message) {
-                    // Muestra el error específico de la API
-                    errorMsg += `Mensaje de la API: ${data.error.message}.`;
-                    console.error("Error detallado de la API:", data.error.message);
-                } else if (response.status === 400) {
-                    errorMsg += "Error 400: Solicitud incorrecta (clave inválida o formato de datos).";
+                    errorMsg += `Mensaje: ${data.error.message}.`;
                 } else if (response.status === 403) {
-                    errorMsg += "Error 403: Acceso Denegado. ¡Debes añadir tu dominio de GitHub a las restricciones de la clave API!";
-                } else {
-                    errorMsg += `Código de estado HTTP: ${response.status}.`;
+                    errorMsg = "Error 403: Acceso Denegado. La clave necesita que se le agregue tu dominio de GitHub como permitido.";
                 }
-
-                outputText.value = 'Fallo en la extracción. Revisa la Consola del navegador para más detalles.';
-                displayError(errorMsg);
-                return; // Detener la ejecución
+                statusMessage.textContent = errorMsg;
+                outputText.value = 'Fallo al extraer el texto.';
+                return; 
             }
 
-            // Procesamiento exitoso
             const extractedText = data.candidates[0].content.parts[0].text.trim();
+            // Limpieza y formato de salida
             const cleanText = extractedText
                                 .split('\n')
                                 .map(line => line.replace(/^(\*|\-|\d+\.|\s*)\s*/, '').trim())
@@ -200,16 +151,15 @@
             downloadSrtButton.disabled = false;
 
         } catch (error) {
-            console.error('Error de red o conexión:', error);
-            displayError(`Error de conexión: ${error.message}. Verifica tu conexión a internet o la URL del API.`);
-            outputText.value = 'Fallo en la conexión. Revisa la Consola.';
+            statusMessage.textContent = `Error de conexión: ${error.message}`;
+            outputText.value = 'Fallo en la conexión.';
         } finally {
             extractButton.disabled = false;
             loadingMessage.style.display = 'none';
         }
     });
-    
-    // Funciones de descarga
+
+    // 3. Funciones de Descarga
     function downloadText(content, filename, type) {
         const blob = new Blob([content], { type: type });
         const url = URL.createObjectURL(blob);
@@ -223,8 +173,7 @@
     }
 
     downloadTxtButton.addEventListener('click', () => {
-        const content = outputText.value;
-        if (content) { downloadText(content, 'texto_extraido.txt', 'text/plain'); }
+        if (outputText.value) { downloadText(outputText.value, 'texto_extraido.txt', 'text/plain'); }
     });
 
     downloadSrtButton.addEventListener('click', () => {
@@ -234,9 +183,9 @@
         let timeOffset = 0;
         
         lines.forEach((line) => {
+            // (Lógica para generar SRT con tiempos ficticios, como en códigos anteriores)
             const start = timeOffset;
             const end = timeOffset + 2000;
-            
             const formatTime = (ms) => {
                 const totalSeconds = Math.floor(ms / 1000);
                 const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
