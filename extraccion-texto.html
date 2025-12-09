@@ -86,7 +86,7 @@
   
   <div class="input-section">
     <h3>Paso 1: Seleccionar Imágenes</h3>
-    <input accept="image/*" id="imageInput" multiple="" type="file" />
+    <input type="file" id="imageInput" accept="image/*" multiple>
   </div>
 
   <div class="image-preview">
@@ -97,22 +97,22 @@
 
   <div class="input-section">
     <h3>Paso 2: Extraer Texto</h3>
-    <button disabled="" id="extractButton">Extraer Texto de las Imágenes</button>
-    <div id="loadingMessage" style="display: none;">Analizando imágenes con Gemini... Esto puede tomar unos segundos.</div>
+    <button id="extractButton" disabled>Extraer Texto de las Imágenes</button>
+    <div id="loadingMessage" style="display:none;">Analizando imágenes con Gemini... Esto puede tomar unos segundos.</div>
   </div>
 
   <div class="output-section">
     <h3>Paso 3: Resultado del Texto Extraído</h3>
-    <textarea id="outputText" placeholder="El texto extraído aparecerá aquí..." readonly=""></textarea>
+    <textarea id="outputText" readonly placeholder="El texto extraído aparecerá aquí..."></textarea>
     <div class="download-buttons" style="margin-top: 10px;">
-      <button disabled="" id="downloadTxtButton">Descargar como .TXT</button>
-      <button disabled="" id="downloadSrtButton">Descargar como .SRT (Subtítulos)</button>
+      <button id="downloadTxtButton" disabled>Descargar como .TXT</button>
+      <button id="downloadSrtButton" disabled>Descargar como .SRT (Subtítulos)</button>
     </div>
   </div>
 </div>
 
 <script>
-  // --- CONFIGURACIÓN Y CLAVE API (REEMPLAZA ESTO) ---
+  // --- CONFIGURACIÓN Y CLAVE API (YA REEMPLAZADA) ---
   const GEMINI_API_KEY = 'AIzaSyD3Qtd8e6dYC2kJIoQxViihXnRIpm-xWmM'; 
   const GEMINI_MODEL = 'gemini-2.5-flash';
   // ----------------------------------------------------
