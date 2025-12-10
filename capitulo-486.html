@@ -1,0 +1,380 @@
+<style>
+/* -------------------------------------- */
+/* ESTILOS CSS - VISOR Y CONTROLES FIJOS (IDÉNTICOS A ANTERIORES) */
+/* -------------------------------------- */
+    html, body {
+        overflow-x: hidden !important; 
+        width: 100% !important; 
+        margin: 0 !important;
+        padding: 0 !important;
+        min-width: 100% !important; 
+    }
+    *, *:before, *:after {
+        box-sizing: border-box !important;
+    }
+    body {
+        margin: 0;
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+    }
+
+    /* Ocultar elementos nativos */
+    header, footer, .navbar, .masthead, .attribution {
+        display: none !important;
+        height: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+    }
+
+    /* 1. Visor de Manga (Responsive) */
+    #manga-viewer {
+        width: 100%;
+        max-width: 100%; 
+        margin: 0 auto; 
+        overflow-x: hidden;
+        min-height: 100vh;
+        padding-top: 5px; 
+        padding-bottom: 70px; /* Espacio para los controles inferiores */
+        cursor: pointer; /* Indica que se puede hacer clic para ocultar/mostrar */
+    }
+    .manga-page {
+        display: block;
+        max-width: 100%; 
+        width: 100%; 
+        height: auto; 
+        margin: 0 auto 10px auto; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* 2. Controles de Auto-Scroll (Fijos en la parte inferior) */
+    #bottom-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: #0d0d0d;
+        color: #f0f0f0;
+        padding: 8px 15px;
+        z-index: 1000;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        /* CLAVE: Transición para que la aparición/desaparición sea suave */
+        opacity: 0.9; /* Opacidad alta por defecto para visibilidad */
+        transition: opacity 0.3s, visibility 0.3s; 
+    }
+    
+    /* 3. Menú Superior (Centrado) */
+    #menu-container {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        /* CLAVE: Transición para que la aparición/desaparición sea suave */
+        opacity: 0.9;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    /* Clase para OCULTAR los controles */
+    .hidden-controls {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important; /* Desactiva la interacción cuando está oculto */
+    }
+    
+    /* Clase para mostrar opacidad 1 cuando el menú desplegable está abierto */
+    .menu-active {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    /* Botón de Menú Superior (☰) */
+    #menu-toggle-btn-top {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 4. Barra de Despliegue (Flotante) */
+    #dropdown-menu { 
+        position: absolute; 
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0); 
+        width: max-content; 
+        min-width: 250px;
+        background-color: #1c1c1c; 
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+        flex-direction: column;
+        gap: 10px;
+        display: flex;
+        
+        /* Oculto por defecto */
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .visible { 
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translate(-50%, 100%) !important;
+        padding-top: 50px; 
+    }
+
+    /* Estilos de botones generales */
+    button {
+        padding: 8px; 
+        background-color: #555; 
+        color: white; 
+        border: none; 
+        cursor: pointer; 
+        border-radius: 4px; 
+        white-space: nowrap;
+        font-size: 0.9em;
+    }
+    input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
+
+    /* Estilos específicos de navegación */
+    #prev-chapter-btn, #next-chapter-btn {
+        padding: 10px 15px;
+        font-weight: bold;
+        flex-grow: 1;
+    }
+    #prev-chapter-btn { background-color: #FFC107; color: black; } 
+    #next-chapter-btn { background-color: #4CAF50; } 
+    #download-btn { background-color: #007bff; }
+    
+    #menu-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 1px solid #444;
+        padding-bottom: 8px;
+        margin-bottom: 5px;
+    }
+    
+    #menu-buttons {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+</style>
+
+<div id="menu-container">
+    <button id="menu-toggle-btn-top">☰</button>
+
+    <div id="dropdown-menu"> 
+        
+        <div id="menu-title">Capítulo 486</div>
+        
+        <div id="menu-buttons">
+            <button id="prev-chapter-btn">◀ Cap. Anterior (485)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="next-chapter-btn">➡️ Cap. Siguiente (487)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="download-btn">⬇️ Descargar Cap. 486</button>
+        </div>
+    </div>
+</div>
+
+<main id="manga-viewer">
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo...</div>
+</main>
+
+<div id="bottom-controls">
+    <label id="autoscroll-label">
+        <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
+    </label>
+    <div id="scroll-speed-controls">
+        <label>Velocidad:</label>
+        <input id="scroll-speed" max="10" type="range" value="5" />
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('manga-viewer');
+        const autoscrollToggle = document.getElementById('autoscroll-toggle');
+        const scrollSpeedRange = document.getElementById('scroll-speed');
+        
+        const dropdownMenu = document.getElementById('dropdown-menu'); 
+        const menuContainer = document.getElementById('menu-container'); 
+        const bottomControls = document.getElementById('bottom-controls'); 
+        const menuToggleButton = document.getElementById('menu-toggle-btn-top');
+        let menuOpen = false; 
+        
+        let scrollInterval;
+        let controlsVisible = true; // Estado inicial: visible
+
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 486 ⚙️ ---
+        const chapterConfig = {
+            id: 486,
+            prevId: 485,
+            nextId: 487,
+            urlPrev: 'capitulo-485.html', 
+            urlNext: 'capitulo-487.html', 
+            
+            // 🛑 ¡ESTAS LÍNEAS DEBES RELLENARLAS CON LOS ENLACES REALES! 🛑
+            fileUrls: [
+                'https://i.imgur.com/EUwmotA.jpeg', // Página 1
+                'https://i.imgur.com/wkQiYOG.jpeg', // Página 2
+                'https://i.imgur.com/3ld1zng.jpeg'  // Página 3                 'https://i.imgur.com/a2OOlMu.jpeg',
+'https://i.imgur.com/Dep7C0F.jpeg',
+'https://i.imgur.com/mpLVZL1.jpeg',
+'https://i.imgur.com/UanOGZT.jpeg',
+'https://i.imgur.com/kkZaZTW.jpeg',
+'https://i.imgur.com/aIDRXu5.jpeg',
+'https://i.imgur.com/m6QCaSn.jpeg',
+'https://i.imgur.com/PMurIlf.jpeg',
+'https://i.imgur.com/J4zhXyg.jpeg',
+(EJEMPLO)
+                //... Añadir más según sea necesario
+            ],
+            // 🛑 URL DE DESCARGA
+            urlDownload: 'https://drive.google.com/file/d/1qWC0Ce6x7O7_iuoc7CfJjS6jlUr2DgSe/view?usp=sharing'
+        };
+        // ---------------------------------------------
+
+        // --- FUNCIONALIDAD: Mostrar/Ocultar Menús con Clic (Nuevo) ---
+        const toggleControls = (e) => {
+            // No hacemos nada si el clic fue dentro del menú superior o si el menú desplegable está abierto
+            if (menuContainer.contains(e.target) || dropdownMenu.contains(e.target)) {
+                return;
+            }
+            
+            // Ocultar si está visible, mostrar si está oculto
+            if (controlsVisible) {
+                // Ocultar: Añadir la clase 'hidden-controls'
+                menuContainer.classList.add('hidden-controls');
+                bottomControls.classList.add('hidden-controls');
+                
+                // Si está en autoscroll, lo detenemos al ocultar para evitar interrupciones
+                if (scrollInterval) {
+                     clearInterval(scrollInterval);
+                     autoscrollToggle.checked = false;
+                }
+
+            } else {
+                // Mostrar: Quitar la clase 'hidden-controls'
+                menuContainer.classList.remove('hidden-controls');
+                bottomControls.classList.remove('hidden-controls');
+            }
+            controlsVisible = !controlsVisible; // Cambiar el estado
+        };
+        
+        // Asignar el evento al clic en el VISOR
+        viewer.addEventListener('click', toggleControls);
+        // También asignamos el evento al documento por si el clic cae fuera del visor
+        document.body.addEventListener('click', toggleControls); 
+
+        // --- LÓGICA DE MENÚ DESPLEGABLE Y NAVEGACIÓN (Anterior) ---
+
+        const toggleMenu = () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                dropdownMenu.classList.add('visible'); 
+                // Asegurar que los controles principales estén visibles mientras el menú desplegable esté abierto
+                menuContainer.classList.remove('hidden-controls'); 
+                bottomControls.classList.remove('hidden-controls');
+                controlsVisible = true;
+
+            } else {
+                dropdownMenu.classList.remove('visible');
+                // Si cerramos el menú, el estado general de visibilidad regresa a 'controlsVisible'
+                if (!controlsVisible) {
+                    menuContainer.classList.add('hidden-controls');
+                    bottomControls.classList.add('hidden-controls');
+                }
+            }
+        };
+        
+        menuToggleButton.addEventListener('click', (e) => {
+             e.stopPropagation(); // Evita que este clic oculte inmediatamente el menú
+             toggleMenu();
+        });
+        
+        // Evitar que el clic dentro del menú desplegable oculte los controles
+        dropdownMenu.addEventListener('click', (e) => {
+             e.stopPropagation();
+        });
+
+        // --- Renderizado y Auto-Scroll (Idéntico) ---
+        
+        const renderChapter = (config) => {
+            viewer.innerHTML = ''; 
+            config.fileUrls.forEach((imageUrl, index) => {
+                const img = document.createElement('img');
+                img.src = imageUrl; 
+                img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
+                img.className = 'manga-page';
+                img.loading = 'lazy'; 
+                viewer.appendChild(img);
+            });
+            window.scrollTo(0, 0); 
+        };
+        
+        const startAutoscroll = (speedValue) => {
+            // Aseguramos que los controles estén visibles cuando se inicia el autoscroll
+            menuContainer.classList.remove('hidden-controls'); 
+            bottomControls.classList.remove('hidden-controls');
+            controlsVisible = true;
+            
+            const intervalTime = 100 - (speedValue * 9); 
+            const scrollAmount = 3; 
+            if (scrollInterval) clearInterval(scrollInterval);
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, scrollAmount);
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    autoscrollToggle.checked = false;
+                    clearInterval(scrollInterval);
+                }
+            }, intervalTime);
+        };
+
+        autoscrollToggle.addEventListener('change', (e) => {
+            if (e.target.checked) { startAutoscroll(scrollSpeedRange.value); } else { if (scrollInterval) clearInterval(scrollInterval); }
+        });
+        scrollSpeedRange.addEventListener('input', (e) => {
+            if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic en el botón active toggleControls
+            window.open(chapterConfig.urlDownload, '_blank');
+        });
+        
+        // --- NAVEGACIÓN ---
+        document.getElementById('prev-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlPrev;
+        });
+        
+        document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlNext;
+        });
+        
+        renderChapter(chapterConfig);
+    });
+</script>
