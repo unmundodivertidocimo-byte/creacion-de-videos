@@ -1,0 +1,396 @@
+<style>
+/* -------------------------------------- */
+/* ESTILOS CSS - VISOR Y CONTROLES FIJOS */
+/* -------------------------------------- */
+    html, body {
+        overflow-x: hidden !important; 
+        width: 100% !important; 
+        margin: 0 !important;
+        padding: 0 !important;
+        min-width: 100% !important; 
+    }
+    *, *:before, *:after {
+        box-sizing: border-box !important;
+    }
+    body {
+        margin: 0;
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+    }
+
+    /* Ocultar elementos nativos */
+    header, footer, .navbar, .masthead, .attribution {
+        display: none !important;
+        height: 0 !important;
+        visibility: hidden !important;
+        max-height: 0 !important;
+    }
+
+    /* 1. Visor de Manga (Responsive) */
+    #manga-viewer {
+        width: 100%;
+        max-width: 100%; 
+        margin: 0 auto; 
+        overflow-x: hidden;
+        min-height: 100vh;
+        padding-top: 5px; 
+        padding-bottom: 70px; 
+        cursor: pointer; 
+    }
+    .manga-page {
+        display: block;
+        max-width: 100%; 
+        width: 100%; 
+        height: auto; 
+        margin: 0 auto 10px auto; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* 2. Controles de Auto-Scroll (Fijos en la parte inferior) */
+    #bottom-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: #0d0d0d;
+        color: #f0f0f0;
+        padding: 8px 15px;
+        z-index: 1000;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        
+        /* 🛑 INICIA OCULTO 🛑 */
+        opacity: 0; 
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+    
+    /* 3. Menú Superior (Centrado) */
+    #menu-container {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        
+        /* 🛑 INICIA OCULTO 🛑 */
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    /* Clase para MOSTRAR los controles (Se añade y remueve con JS) */
+    .visible-controls {
+        opacity: 0.9 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Clase para mostrar opacidad 1 cuando el menú desplegable está abierto */
+    .menu-active {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    /* Botón de Menú Superior (☰) */
+    #menu-toggle-btn-top {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 4. Barra de Despliegue (Flotante) */
+    #dropdown-menu { 
+        position: absolute; 
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0); 
+        width: max-content; 
+        min-width: 250px;
+        background-color: #1c1c1c; 
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+        flex-direction: column;
+        gap: 10px;
+        display: flex;
+        
+        /* Oculto por defecto */
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .visible { 
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translate(-50%, 100%) !important;
+        padding-top: 50px; 
+    }
+
+    /* Estilos de botones generales */
+    button {
+        padding: 8px; background-color: #555; color: white; border: none; cursor: pointer; 
+        border-radius: 4px; white-space: nowrap; font-size: 0.9em;
+    }
+    input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
+    #prev-chapter-btn, #next-chapter-btn { padding: 10px 15px; font-weight: bold; flex-grow: 1; }
+    #prev-chapter-btn { background-color: #FFC107; color: black; } 
+    #next-chapter-btn { background-color: #4CAF50; } 
+    #download-btn { background-color: #007bff; }
+    #menu-title {
+        font-size: 1.1em; font-weight: bold; text-align: center; border-bottom: 1px solid #444; 
+        padding-bottom: 8px; margin-bottom: 5px;
+    }
+    #menu-buttons { display: flex; gap: 10px; width: 100%; }
+</style>
+
+<div id="menu-container">
+    <button id="menu-toggle-btn-top">☰</button>
+
+    <div id="dropdown-menu"> 
+        
+        <div id="menu-title">Matón a Cargo - Capítulo 78</div>
+        
+        <div id="menu-buttons">
+            <button id="prev-chapter-btn">◀ Cap. Anterior (77)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="next-chapter-btn">➡️ Cap. Siguiente (79)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="download-btn">⬇️ Descargar Cap. 78</button>
+        </div>
+    </div>
+</div>
+
+<main id="manga-viewer">
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo Matón a Cargo...</div>
+</main>
+
+<div id="bottom-controls">
+    <label id="autoscroll-label">
+        <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
+    </label>
+    <div id="scroll-speed-controls">
+        <label>Velocidad:</label>
+        <input id="scroll-speed" max="10" type="range" value="5" />
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('manga-viewer');
+        const autoscrollToggle = document.getElementById('autoscroll-toggle');
+        const scrollSpeedRange = document.getElementById('scroll-speed');
+        
+        const dropdownMenu = document.getElementById('dropdown-menu'); 
+        const menuContainer = document.getElementById('menu-container'); 
+        const bottomControls = document.getElementById('bottom-controls'); 
+        const menuToggleButton = document.getElementById('menu-toggle-btn-top');
+        let menuOpen = false; 
+        
+        let scrollInterval;
+        let controlsVisible = false; // Estado inicial: OCULTO
+
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 78 (Matón a Cargo) ⚙️ ---
+        const chapterConfig = {
+            id: 78,
+            prevId: 77,
+            nextId: 79, 
+            
+            // 🛑 ¡IMPORTANTE! Nombra los archivos de esta serie de forma diferente a la otra, ejemplo:
+            // "maton-77.html"
+            // "maton-78.html"
+            // "maton-79.html"
+            urlPrev: 'capitulo-77-maton.html', 
+            urlNext: 'capitulo-79-maton.html', 
+            
+            // 🛑 ¡RELLENA ESTAS LÍNEAS CON LA LISTA GENERADA DE ENLACES DEL CAPÍTULO 78! 🛑
+            fileUrls: ['https://i.imgur.com/d8V46Sf.jpeg',
+'https://i.imgur.com/NnjObhB.jpeg',
+'https://i.imgur.com/Ky2RJbF.jpeg',
+'https://i.imgur.com/3RS6mc.jpeg',
+'https://i.imgur.com/HYGRz7n.jpeg',
+'https://i.imgur.com/THdU1Uv.jpeg',
+'https://i.imgur.com/pexivvd.jpeg',
+'https://i.imgur.com/eAmRhPV.jpeg',
+'https://i.imgur.com/QO3XQKY.jpeg',
+'https://i.imgur.com/oQWJpz2.jpeg',
+'https://i.imgur.com/8uFIT5.jpeg',
+'https://i.imgur.com/BkrVmnC.jpeg',
+'https://i.imgur.com/VNrKlED.jpeg',
+'https://i.imgur.com/8ETG6BQ.jpeg',
+'https://i.imgur.com/nhP4VaM.jpeg',
+'https://i.imgur.com/09EzExk.jpeg',
+'https://i.imgur.com/3BKwPJK.jpeg',
+'https://i.imgur.com/RFdFr9Q.jpeg',
+'https://i.imgur.com/5jD9WZD.jpeg',
+'https://i.imgur.com/VGcp3XU.jpeg',
+'https://i.imgur.com/nIieMH9.jpeg',
+'https://i.imgur.com/jaMnvkW.jpeg',
+'https://i.imgur.com/UbWqK51.jpeg',
+'https://i.imgur.com/d6JKPXl.jpeg',
+'https://i.imgur.com/sCbfQDb.jpeg',
+'https://i.imgur.com/gN0Ne4O.jpeg',
+'https://i.imgur.com/lsveuz0.jpeg',
+'https://i.imgur.com/FxwvnGf.jpeg',
+'https://i.imgur.com/mjjvF5e.jpeg',
+'https://i.imgur.com/sKFYO5v.jpeg',
+'https://i.imgur.com/joNQbPW.jpeg',
+'https://i.imgur.com/WTNK1K0.jpeg',
+'https://i.imgur.com/Sh78ZD5.jpeg',
+'https://i.imgur.com/KAxMy5l.jpeg',
+'https://i.imgur.com/vs7o5jU.jpeg',
+'https://i.imgur.com/HexhTPQ.jpeg',
+'https://i.imgur.com/P4mKNT0.jpeg',
+'https://i.imgur.com/Tp7pBuv.jpeg',
+'https://i.imgur.com/jBtz5hL.jpeg',
+'https://i.imgur.com/tghgPEU.jpeg',
+'https://i.imgur.com/0nI4al6.jpeg',
+'https://i.imgur.com/Qpx85du.jpeg',
+'https://i.imgur.com/uYgelZ5.jpeg',
+'https://i.imgur.com/Qw5wMCk.jpeg',
+'https://i.imgur.com/q6xndAN.jpeg',
+'https://i.imgur.com/RFSpFNB.jpeg',
+'https://i.imgur.com/eOMrGdP.jpeg',
+'https://i.imgur.com/nJatvJM.jpeg',
+'https://i.imgur.com/ZcuaYUx.jpeg',
+'https://i.imgur.com/X8BL25u.jpeg',],
+            // 🛑 URL DE DESCARGA REAL DEL CAPÍTULO 78
+            urlDownload: 'https://drive.google.com/file/d/1oKeesfD1fpx3u9nEOZWRGRprpjau6Onu/view?usp=sharing'
+        };
+        // ---------------------------------------------
+
+        // --- FUNCIONALIDAD: Mostrar/Ocultar Menús con Clic ---
+        const toggleControls = (e) => {
+            if (menuContainer.contains(e.target) || bottomControls.contains(e.target) || dropdownMenu.contains(e.target)) {
+                return;
+            }
+            
+            if (menuOpen) {
+                toggleMenu();
+                return; 
+            }
+
+            if (controlsVisible) {
+                menuContainer.classList.remove('visible-controls');
+                bottomControls.classList.remove('visible-controls');
+                
+                if (scrollInterval) {
+                    clearInterval(scrollInterval);
+                    autoscrollToggle.checked = false;
+                }
+            } else {
+                menuContainer.classList.add('visible-controls');
+                bottomControls.classList.add('visible-controls');
+            }
+            controlsVisible = !controlsVisible;
+        };
+        
+        document.body.addEventListener('click', toggleControls); 
+
+        // --- LÓGICA DE MENÚ DESPLEGABLE Y NAVEGACIÓN ---
+
+        const toggleMenu = () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                dropdownMenu.classList.add('visible'); 
+                menuContainer.classList.add('visible-controls'); 
+                bottomControls.classList.add('visible-controls');
+                controlsVisible = true; 
+
+            } else {
+                dropdownMenu.classList.remove('visible');
+                if (!controlsVisible) {
+                    menuContainer.classList.remove('visible-controls');
+                    bottomControls.classList.remove('visible-controls');
+                }
+            }
+        };
+        
+        menuToggleButton.addEventListener('click', (e) => {
+             e.stopPropagation(); 
+             toggleMenu();
+        });
+        
+        dropdownMenu.addEventListener('click', (e) => {
+             e.stopPropagation();
+        });
+        
+        // --- Renderizado y Auto-Scroll ---
+        
+        const renderChapter = (config) => {
+            viewer.innerHTML = ''; 
+            config.fileUrls.forEach((imageUrl, index) => {
+                const img = document.createElement('img');
+                img.src = imageUrl; 
+                img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
+                img.className = 'manga-page';
+                img.loading = 'lazy'; 
+                viewer.appendChild(img);
+            });
+            window.scrollTo(0, 0); 
+        };
+        
+        const startAutoscroll = (speedValue) => {
+            menuContainer.classList.add('visible-controls'); 
+            bottomControls.classList.add('visible-controls');
+            controlsVisible = true;
+            
+            const intervalTime = 100 - (speedValue * 9); 
+            const scrollAmount = 3; 
+            if (scrollInterval) clearInterval(scrollInterval);
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, scrollAmount);
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    autoscrollToggle.checked = false;
+                    clearInterval(scrollInterval);
+                }
+            }, intervalTime);
+        };
+
+        autoscrollToggle.addEventListener('change', (e) => {
+            if (e.target.checked) { startAutoscroll(scrollSpeedRange.value); } else { if (scrollInterval) clearInterval(scrollInterval); }
+        });
+        scrollSpeedRange.addEventListener('input', (e) => {
+            if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            window.open(chapterConfig.urlDownload, '_blank');
+        });
+        
+        // --- NAVEGACIÓN ---
+        document.getElementById('prev-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlPrev;
+        });
+        
+        document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlNext;
+        });
+        
+        renderChapter(chapterConfig);
+    });
+</script>
