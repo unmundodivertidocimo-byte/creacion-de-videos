@@ -41,8 +41,10 @@
     }
     .manga-page {
         display: block;
+        /* 🛑 ESTAS DOS LÍNEAS FUERZAN EL AJUSTE RESPONSIVO 🛑 */
         max-width: 100%; 
         width: 100%; 
+        /* ---------------------------------------------------- */
         height: auto; 
         margin: 0 auto 10px auto; 
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -217,12 +219,9 @@
             prevId: 77,
             nextId: 79, 
             
-            // 🛑 ¡IMPORTANTE! Nombra los archivos de esta serie de forma diferente a la otra, ejemplo:
-            // "maton-77.html"
-            // "maton-78.html"
-            // "maton-79.html"
-            urlPrev: 'capitulo-77-maton.html', 
-            urlNext: 'capitulo-79-maton.html', 
+            // Usamos el formato de archivo que me indicaste
+            urlPrev: 'maton-capitulo-77.html', 
+            urlNext: 'maton-capitulo-79.html', 
             
             // 🛑 ¡RELLENA ESTAS LÍNEAS CON LA LISTA GENERADA DE ENLACES DEL CAPÍTULO 78! 🛑
             fileUrls: ['https://i.imgur.com/d8V46Sf.jpeg',
