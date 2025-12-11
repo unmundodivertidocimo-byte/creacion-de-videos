@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tengo una mansión en un mundo post-apocalíptico - Capítulos 491-494 - Lector</title>
+    
+    <style>
+        /* -------------------------------------- */
+        /* ESTILOS CSS - VISOR Y CONTROLES FIJOS */
+        /* (Mantiene las reglas de ajuste con !important/vw) */
+        /* -------------------------------------- */
+        html, body {
+            overflow-x: hidden !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-width: 100% !important;
+        }
+        *, *:before, *:after {
+            box-sizing: border-box !important;
+        }
+        body {
+            margin: 0;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Ocultar elementos nativos del hosting que puedan interferir */
+        header, footer, .navbar, .masthead, .attribution {
+            display: none !important;
+            height: 0 !important;
+            visibility: hidden !important;
+            max-height: 0 !important;
+        }
+
+        /* 1. Visor de Manga (Responsive) - FORZAMOS ANCHO DE LA VISTA */
+        #manga-viewer {
+            width: 100vw !important; /* Forzado al 100% del ancho del viewport */
+            max-width: 100vw !important;
+            margin: 0 auto;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-top: 5px;
+            padding-bottom: 70px;
+            cursor: pointer;
+        }
+        
+        .manga-page {
+            display: block !important;
+            /* REGLA CLAVE CSS: FORZAR AL 100% DEL ANCHO DE LA VENTANA (VIEWPORT) */
+            max-width: 100vw !important;
+            width: 100vw !important;
+            
+            height: auto !important;
+            margin: 0 auto 10px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 2. Controles de Auto-Scroll (Fijos en la parte inferior) */
+        #bottom-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: #0d0d0d;
+            color: #f0f0f0;
+            padding: 8px 15px;
+            z-index: 1000;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            
+            /* 🛑 INICIA OCULTO 🛑 */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        /* 3. Menú Superior (Centrado) */
+        #menu-container {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            
+            /* 🛑 INICIA OCULTO 🛑 */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        /* Clase para MOSTRAR los controles (Se añade y remueve con JS) */
+        .visible-controls {
+            opacity: 0.9 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+        }
+        
+        /* Botón de Menú Superior (☰) */
+        #menu-toggle-btn-top {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 4. Barra de Despliegue (Flotante) */
+        #dropdown-menu { 
+            position: absolute; 
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0); 
+            width: max-content; 
+            min-width: 250px;
+            background-color: #1c1c1c; 
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            flex-direction: column;
+            gap: 10px;
+            display: flex;
+            
+            /* Oculto por defecto */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        .visible { 
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transform: translate(-50%, 100%) !important;
+            padding-top: 50px; 
+        }
+
+        /* Estilos de botones generales */
+        button {
+            padding: 8px; background-color: #555; color: white; border: none; cursor: pointer; 
+            border-radius: 4px; white-space: nowrap; font-size: 0.9em;
+        }
+        input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
+        #prev-chapter-btn, #next-chapter-btn { padding: 10px 15px; font-weight: bold; flex-grow: 1; }
+        #prev-chapter-btn { background-color: #FFC107; color: black; } 
+        #next-chapter-btn { background-color: #4CAF50; } 
+        #download-btn { background-color: #007bff; }
+        #menu-title {
+            font-size: 1.1em; font-weight: bold; text-align: center; border-bottom: 1px solid #444; 
+            padding-bottom: 8px; margin-bottom: 5px;
+        }
+        #menu-buttons { display: flex; gap: 10px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div id="menu-container">
+    <button id="menu-toggle-btn-top">☰</button>
+
+    <div id="dropdown-menu"> 
+        
+        <div id="menu-title">Tengo una mansión... - Capítulos 491-494</div>
+        
+        <div id="menu-buttons">
+            <button id="prev-chapter-btn">◀ Cap. Anterior (490)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="next-chapter-btn">➡️ Cap. Siguiente (495)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="download-btn">⬇️ Descargar Cap. 491-494</button>
+        </div>
+    </div>
+</div>
+
+<main id="manga-viewer">
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo Tengo una mansión...</div>
+</main>
+
+<div id="bottom-controls">
+    <label id="autoscroll-label">
+        <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
+    </label>
+    <div id="scroll-speed-controls">
+        <label>Velocidad:</label>
+        <input id="scroll-speed" max="10" type="range" value="5" />
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('manga-viewer');
+        const autoscrollToggle = document.getElementById('autoscroll-toggle');
+        const scrollSpeedRange = document.getElementById('scroll-speed');
+        
+        const dropdownMenu = document.getElementById('dropdown-menu'); 
+        const menuContainer = document.getElementById('menu-container'); 
+        const bottomControls = document.getElementById('bottom-controls'); 
+        const menuToggleButton = document.getElementById('menu-toggle-btn-top');
+        let menuOpen = false; 
+        
+        let scrollInterval;
+        let controlsVisible = false;
+
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 491-494 (Tengo una mansión en un mundo post-apocalíptico) ⚙️ ---
+        const chapterConfig = {
+            id: '491-494',
+            prevId: 490,
+            nextId: 495, 
+            
+            // Archivos de navegación (usando el prefijo "mansion-")
+            urlPrev: 'capitulo-490.html', 
+            urlNext: 'capitulo-495.html', 
+            
+            // 🛑 REEMPLAZA ESTOS CON LOS ENLACES REALES DEL CAPÍTULO 491 AL 494 🛑
+            fileUrls: ['https://i.imgur.com/VsIF2yg.jpeg',
+    'https://i.imgur.com/X31uwl4.jpeg',
+    'https://i.imgur.com/yuSq6ud.jpeg',
+    'https://i.imgur.com/2BEbCaW.jpeg',
+    'https://i.imgur.com/GDq5zF6.jpeg',
+    'https://i.imgur.com/aaYOHxo.jpeg',
+    'https://i.imgur.com/11kjyJi.jpeg',
+    'https://i.imgur.com/cK6BxI0.jpeg',
+    'https://i.imgur.com/LGu8A6Z.jpeg',
+    'https://i.imgur.com/Pm8UXEd.jpeg',
+    'https://i.imgur.com/Yq6Ja7H.jpeg',
+    'https://i.imgur.com/8ZmHiFM.jpeg',
+    'https://i.imgur.com/aEkbte5.jpeg',
+    'https://i.imgur.com/Q66N3By.jpeg',
+    'https://i.imgur.com/QKqZMpj.jpeg',
+    'https://i.imgur.com/GMgU2oA.jpeg',
+    'https://i.imgur.com/6NGJf9X.jpeg',
+    'https://i.imgur.com/xi2oo2i.jpeg',
+    'https://i.imgur.com/L2sOZiS.jpeg',
+    'https://i.imgur.com/3Y8BhNK.jpeg',
+    'https://i.imgur.com/MTEWUn1.jpeg',
+    'https://i.imgur.com/3hxq8qq.jpeg',
+    'https://i.imgur.com/J4JUjSH.jpeg',
+    'https://i.imgur.com/njqOv5s.jpeg',
+    'https://i.imgur.com/AOFHC8A.jpeg',
+    'https://i.imgur.com/xnzH1Pi.jpeg',
+    'https://i.imgur.com/L62YZ2j.jpeg',
+    'https://i.imgur.com/fghGNTj.jpeg',
+    'https://i.imgur.com/OQdsVPP.jpeg',
+    'https://i.imgur.com/YLDVtg8.jpeg',
+    'https://i.imgur.com/Yc6Exvi.jpeg',
+    'https://i.imgur.com/MekHRGx.jpeg',
+    'https://i.imgur.com/NcfR6lp.jpeg',
+    'https://i.imgur.com/5klZ6Cw.jpeg',
+    'https://i.imgur.com/j4QDBKZ.jpeg',
+    'https://i.imgur.com/3183lfA.jpeg',
+    'https://i.imgur.com/t1i9Y7r.jpeg',
+    'https://i.imgur.com/3dDBT8f.jpeg',
+    'https://i.imgur.com/Bwr2qqQ.jpeg',
+    'https://i.imgur.com/tTCfXPz.jpeg',
+    'https://i.imgur.com/Cp3ass3.jpeg',
+    'https://i.imgur.com/WsfBRs4.jpeg',
+    'https://i.imgur.com/REFWHRD.jpeg',
+    'https://i.imgur.com/0SbxKVY.jpeg',
+    'https://i.imgur.com/OFNjUSA.jpeg',
+    'https://i.imgur.com/jnVvwZa.jpeg',
+    'https://i.imgur.com/BgVzhzh.jpeg',
+    'https://i.imgur.com/iSE2xez.jpeg'],
+            // 🛑 URL DE DESCARGA DEL CAPÍTULO 491-494
+            urlDownload: 'https://drive.google.com/file/d/1MjG7rbu3QaRbPT-1ZAzYR8Vuy9dzCoQr/view?usp=sharing' // Reemplaza XXX con tu ID de descarga
+        };
+        // ---------------------------------------------
+
+        // --- FUNCIONALIDAD: Mostrar/Ocultar Menús con Clic ---
+        const toggleControls = (e) => {
+            if (menuContainer.contains(e.target) || bottomControls.contains(e.target) || dropdownMenu.contains(e.target)) {
+                return;
+            }
+            
+            if (menuOpen) {
+                toggleMenu();
+                return; 
+            }
+
+            if (controlsVisible) {
+                menuContainer.classList.remove('visible-controls');
+                bottomControls.classList.remove('visible-controls');
+                
+                if (scrollInterval) {
+                    clearInterval(scrollInterval);
+                    autoscrollToggle.checked = false;
+                }
+            } else {
+                menuContainer.classList.add('visible-controls');
+                bottomControls.classList.add('visible-controls');
+            }
+            controlsVisible = !controlsVisible;
+        };
+        
+        document.body.addEventListener('click', toggleControls); 
+
+        // --- LÓGICA DE MENÚ DESPLEGABLE Y NAVEGACIÓN ---
+
+        const toggleMenu = () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                dropdownMenu.classList.add('visible'); 
+                menuContainer.classList.add('visible-controls'); 
+                bottomControls.classList.add('visible-controls');
+                controlsVisible = true; 
+
+            } else {
+                dropdownMenu.classList.remove('visible');
+                if (!controlsVisible) {
+                    menuContainer.classList.remove('visible-controls');
+                    bottomControls.classList.remove('visible-controls');
+                }
+            }
+        };
+        
+        menuToggleButton.addEventListener('click', (e) => {
+             e.stopPropagation(); 
+             toggleMenu();
+        });
+        
+        dropdownMenu.addEventListener('click', (e) => {
+             e.stopPropagation();
+        });
+        
+        // --- Renderizado y Auto-Scroll (Mantiene la SOLUCIÓN DE AJUSTE) ---
+        
+        const renderChapter = (config) => {
+            viewer.innerHTML = ''; 
+            config.fileUrls.forEach((imageUrl, index) => {
+                const img = document.createElement('img');
+                img.src = imageUrl; 
+                img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
+                img.className = 'manga-page';
+                img.loading = 'lazy';
+                
+                // ESTILOS INLINE DE ALTA PRIORIDAD AL CREAR
+                img.style.width = '100%';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+
+                viewer.appendChild(img);
+            });
+            
+            // SEGUNDA CAPA DE FUERZA: EJECUTAR DESPUÉS DE UN PEQUEÑO RETRASO
+            setTimeout(() => {
+                const images = viewer.querySelectorAll('.manga-page');
+                images.forEach(img => {
+                    // Usar setProperty con 'important' tiene la máxima prioridad
+                    img.style.setProperty('width', '100vw', 'important');
+                    img.style.setProperty('max-width', '100vw', 'important');
+                    img.style.setProperty('height', 'auto', 'important');
+                    
+                    // Si el problema es que el contenedor tiene un tamaño fijo, lo reiniciamos
+                    viewer.style.setProperty('width', '100vw', 'important');
+                    viewer.style.setProperty('max-width', '100vw', 'important');
+                });
+            }, 100); 
+
+            window.scrollTo(0, 0); 
+        };
+        
+        const startAutoscroll = (speedValue) => {
+            menuContainer.classList.add('visible-controls'); 
+            bottomControls.classList.add('visible-controls');
+            controlsVisible = true;
+            
+            const intervalTime = 100 - (speedValue * 9); 
+            const scrollAmount = 3; 
+            if (scrollInterval) clearInterval(scrollInterval);
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, scrollAmount);
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    autoscrollToggle.checked = false;
+                    clearInterval(scrollInterval);
+                }
+            }, intervalTime);
+        };
+
+        autoscrollToggle.addEventListener('change', (e) => {
+            if (e.target.checked) { startAutoscroll(scrollSpeedRange.value); } else { if (scrollInterval) clearInterval(scrollInterval); }
+        });
+        scrollSpeedRange.addEventListener('input', (e) => {
+            if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            window.open(chapterConfig.urlDownload, '_blank');
+        });
+        
+        // --- NAVEGACIÓN ---
+        document.getElementById('prev-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlPrev;
+        });
+        
+        document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlNext;
+        });
+        
+        renderChapter(chapterConfig);
+    });
+</script>
+</body>
+</html>
