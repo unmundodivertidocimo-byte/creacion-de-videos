@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emperador Mágico - Capítulos 1-3 - Lector</title>
+    
+    <style>
+        /* [ ... Mismos estilos CSS de ajuste de imagen y control ... ] */
+        html, body {
+            overflow-x: hidden !important; width: 100% !important; margin: 0 !important; padding: 0 !important; min-width: 100% !important;
+        }
+        body {
+            background-color: #1a1a1a; color: #f0f0f0; font-family: Arial, sans-serif; min-height: 100vh;
+        }
+        header, footer, .navbar, .masthead, .attribution {
+            display: none !important; height: 0 !important; visibility: hidden !important; max-height: 0 !important;
+        }
+        #manga-viewer {
+            width: 100vw !important; max-width: 100vw !important; margin: 0 auto; overflow-x: hidden; min-height: 100vh; padding-top: 5px; padding-bottom: 70px; cursor: pointer;
+        }
+        .manga-page {
+            display: block !important; max-width: 100vw !important; width: 100vw !important; height: auto !important; margin: 0 auto 10px auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #bottom-controls {
+            position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background-color: #0d0d0d; padding: 8px 15px; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; gap: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s, visibility 0.3s;
+        }
+        #menu-container {
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1001; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s, visibility 0.3s;
+        }
+        .visible-controls {
+            opacity: 0.9 !important; visibility: visible !important; pointer-events: auto !important;
+        }
+        #menu-toggle-btn-top {
+            background-color: #333; color: white; border: none; padding: 8px 12px; font-size: 1.2em; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        #dropdown-menu { 
+            position: absolute; top: 0; left: 50%; transform: translate(-50%, 0); width: max-content; min-width: 250px; background-color: #1c1c1c; padding: 15px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7); flex-direction: column; gap: 10px; display: flex; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s, transform 0.3s;
+        }
+        .visible { 
+            opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; transform: translate(-50%, 100%) !important; padding-top: 50px; 
+        }
+        button {
+            padding: 8px; background-color: #555; color: white; border: none; cursor: pointer; border-radius: 4px; white-space: nowrap; font-size: 0.9em;
+        }
+        input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
+        #prev-chapter-btn, #next-chapter-btn { padding: 10px 15px; font-weight: bold; flex-grow: 1; }
+        #prev-chapter-btn { background-color: #FFC107; color: black; } 
+        #next-chapter-btn { background-color: #4CAF50; } 
+        #download-btn { background-color: #007bff; }
+        #menu-title {
+            font-size: 1.1em; font-weight: bold; text-align: center; border-bottom: 1px solid #444; padding-bottom: 8px; margin-bottom: 5px;
+        }
+        #menu-buttons { display: flex; gap: 10px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div id="menu-container">
+    <button id="menu-toggle-btn-top">☰</button>
+
+    <div id="dropdown-menu"> 
+        
+        <div id="menu-title">Emperador Mágico - Capítulos 1-3</div>
+        
+        <div id="menu-buttons">
+            <button id="prev-chapter-btn" disabled>◀ Inicio de la Serie</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="next-chapter-btn">➡️ Cap. Siguiente (4)</button>
+        </div>
+
+        <div id="menu-buttons">
+            <button id="download-btn">⬇️ Descargar Cap. 1-3</button>
+        </div>
+    </div>
+</div>
+
+<main id="manga-viewer">
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo Emperador Mágico...</div>
+</main>
+
+<div id="bottom-controls">
+    <label id="autoscroll-label">
+        <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
+    </label>
+    <div id="scroll-speed-controls">
+        <label>Velocidad:</label>
+        <input id="scroll-speed" max="10" type="range" value="5" />
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const viewer = document.getElementById('manga-viewer');
+        const autoscrollToggle = document.getElementById('autoscroll-toggle');
+        const scrollSpeedRange = document.getElementById('scroll-speed');
+        const dropdownMenu = document.getElementById('dropdown-menu'); 
+        const menuContainer = document.getElementById('menu-container'); 
+        const bottomControls = document.getElementById('bottom-controls'); 
+        const menuToggleButton = document.getElementById('menu-toggle-btn-top');
+        let menuOpen = false; 
+        let scrollInterval;
+        let controlsVisible = false;
+
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 1-3 (Emperador Mágico) ⚙️ ---
+        const chapterConfig = {
+            id: '1-3',
+            prevId: 0, // 0 indica que no hay anterior
+            nextId: 4, 
+            
+            // Archivos de navegación (usando el prefijo "emperador-")
+            urlPrev: 'index-emperador.html', // Al inicio, regresa al índice de la serie
+            urlNext: 'emperador-capitulo-4.html', 
+            
+            // 🛑 REEMPLAZA ESTOS CON LOS ENLACES REALES DEL CAPÍTULO 1 AL 3 🛑
+            fileUrls: ['https://i.imgur.com/ogVCMnL.png',
+    'https://i.imgur.com/zw1WsD2.png',
+    'https://i.imgur.com/DHlJr9I.png',
+    'https://i.imgur.com/F3LnYdT.png',
+    'https://i.imgur.com/jDLQ8Ho.png',
+    'https://i.imgur.com/FzjEtvi.png',
+    'https://i.imgur.com/ufKX2Ch.png',
+    'https://i.imgur.com/Qoiy5oj.png',
+    'https://i.imgur.com/mdlCJer.png',
+    'https://i.imgur.com/0BNs9Pa.png',
+    'https://i.imgur.com/NX0Kp6U.png',
+    'https://i.imgur.com/YNF3e5V.png',
+    'https://i.imgur.com/rZm8CSb.png',
+    'https://i.imgur.com/CT2URk1.png',
+    'https://i.imgur.com/HMwx7af.png',
+    'https://i.imgur.com/5LLGXR5.png',
+    'https://i.imgur.com/rbNcSD5.png',
+    'https://i.imgur.com/16L8iMi.png',
+    'https://i.imgur.com/Xb2Dcm5.png',
+    'https://i.imgur.com/0D5pPbW.png',
+    'https://i.imgur.com/6cHwxu2.png',
+    'https://i.imgur.com/XSQVpA0.png',
+    'https://i.imgur.com/j4IMBXo.png',
+    'https://i.imgur.com/lD38Ukl.png',
+    'https://i.imgur.com/VT5I6O0.png',
+    'https://i.imgur.com/ZCQ7k2W.png',
+    'https://i.imgur.com/OrQ5dSj.png',
+    'https://i.imgur.com/FtDneXf.png',
+    'https://i.imgur.com/ynzVQhs.png',
+    'https://i.imgur.com/ebWSNSp.png',
+    'https://i.imgur.com/GnT1wAi.png',
+    'https://i.imgur.com/UqGd8GH.png',
+    'https://i.imgur.com/6qCIKPD.png',
+    'https://i.imgur.com/HoCV7cY.png',
+    'https://i.imgur.com/lEBclfh.png',
+    'https://i.imgur.com/CMhP7mB.png',
+    'https://i.imgur.com/of1InfW.png',
+    'https://i.imgur.com/NlwABnh.png',
+    'https://i.imgur.com/xuQEQKS.png',
+    'https://i.imgur.com/5wANYo6.png',
+    'https://i.imgur.com/7XQ5Lin.png',
+    'https://i.imgur.com/cxWmq9m.png',
+    'https://i.imgur.com/Uruh9iO.png',
+    'https://i.imgur.com/IhQbRe6.png',
+    'https://i.imgur.com/DjZaa4H.png',
+    'https://i.imgur.com/NoABtgZ.png',
+    'https://i.imgur.com/DnEVnBm.png',
+    'https://i.imgur.com/lT5updk.png',
+    'https://i.imgur.com/AZ2Rdbh.png',
+    'https://i.imgur.com/wXSmDVX.png',
+    'https://i.imgur.com/OEMziUa.png',
+    'https://i.imgur.com/vKr7k85.png',
+    'https://i.imgur.com/2iOPzXi.png',
+    'https://i.imgur.com/dS6IZtD.png',
+    'https://i.imgur.com/UtZGJre.png',
+    'https://i.imgur.com/d3yLxjQ.png',
+    'https://i.imgur.com/zmqM4HE.png',
+    'https://i.imgur.com/lVIp6ek.png',
+    'https://i.imgur.com/gMSa5Qg.png',
+    'https://i.imgur.com/XpwABTQ.png',
+    'https://i.imgur.com/854rwj9.png'],
+            // 🛑 URL DE DESCARGA DEL CAPÍTULO 1-3
+            urlDownload: 'https://drive.google.com/file/d/1P92y_4A0N969fdDBxTghA_Vc3GG2mIiR/view?usp=sharing'
+        };
+        
+        // Función para deshabilitar la navegación anterior si es el primer capítulo
+        if (chapterConfig.prevId === 0) {
+            document.getElementById('prev-chapter-btn').disabled = true;
+            document.getElementById('prev-chapter-btn').style.backgroundColor = '#555';
+        }
+        // ---------------------------------------------
+
+        // [ ... Mismo JavaScript para controles, renderizado y scroll ... ]
+
+        const toggleControls = (e) => {
+            if (menuContainer.contains(e.target) || bottomControls.contains(e.target) || dropdownMenu.contains(e.target)) { return; }
+            if (menuOpen) { toggleMenu(); return; }
+            if (controlsVisible) {
+                menuContainer.classList.remove('visible-controls');
+                bottomControls.classList.remove('visible-controls');
+                if (scrollInterval) { clearInterval(scrollInterval); autoscrollToggle.checked = false; }
+            } else {
+                menuContainer.classList.add('visible-controls');
+                bottomControls.classList.add('visible-controls');
+            }
+            controlsVisible = !controlsVisible;
+        };
+        document.body.addEventListener('click', toggleControls); 
+
+        const toggleMenu = () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                dropdownMenu.classList.add('visible'); 
+                menuContainer.classList.add('visible-controls'); 
+                bottomControls.classList.add('visible-controls');
+                controlsVisible = true; 
+            } else {
+                dropdownMenu.classList.remove('visible');
+                if (!controlsVisible) {
+                    menuContainer.classList.remove('visible-controls');
+                    bottomControls.classList.remove('visible-controls');
+                }
+            }
+        };
+        menuToggleButton.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+        dropdownMenu.addEventListener('click', (e) => { e.stopPropagation(); });
+        
+        const renderChapter = (config) => {
+            viewer.innerHTML = ''; 
+            config.fileUrls.forEach((imageUrl, index) => {
+                const img = document.createElement('img');
+                img.src = imageUrl; 
+                img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
+                img.className = 'manga-page';
+                img.loading = 'lazy';
+                img.style.width = '100%';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                viewer.appendChild(img);
+            });
+            setTimeout(() => {
+                const images = viewer.querySelectorAll('.manga-page');
+                images.forEach(img => {
+                    img.style.setProperty('width', '100vw', 'important');
+                    img.style.setProperty('max-width', '100vw', 'important');
+                    img.style.setProperty('height', 'auto', 'important');
+                    viewer.style.setProperty('width', '100vw', 'important');
+                    viewer.style.setProperty('max-width', '100vw', 'important');
+                });
+            }, 100); 
+            window.scrollTo(0, 0); 
+        };
+        
+        const startAutoscroll = (speedValue) => {
+            menuContainer.classList.add('visible-controls'); 
+            bottomControls.classList.add('visible-controls');
+            controlsVisible = true;
+            const intervalTime = 100 - (speedValue * 9); 
+            const scrollAmount = 3; 
+            if (scrollInterval) clearInterval(scrollInterval);
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, scrollAmount);
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    autoscrollToggle.checked = false;
+                    clearInterval(scrollInterval);
+                }
+            }, intervalTime);
+        };
+
+        autoscrollToggle.addEventListener('change', (e) => {
+            if (e.target.checked) { startAutoscroll(scrollSpeedRange.value); } else { if (scrollInterval) clearInterval(scrollInterval); }
+        });
+        scrollSpeedRange.addEventListener('input', (e) => {
+            if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            window.open(chapterConfig.urlDownload, '_blank');
+        });
+        
+        document.getElementById('prev-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!e.currentTarget.disabled) {
+                window.location.href = chapterConfig.urlPrev;
+            }
+        });
+        
+        document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlNext;
+        });
+        
+        renderChapter(chapterConfig);
+    });
+</script>
+</body>
+</html>
