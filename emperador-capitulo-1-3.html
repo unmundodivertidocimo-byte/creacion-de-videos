@@ -3,224 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emperador Mágico - Capítulos 1-3 - Lector</title>
+    <title>El Emperador Mágico - Capítulo 1-3 - Lector</title>
     
     <style>
-        /* [ ... Mismos estilos CSS de ajuste de imagen y control ... ] */
+    /* -------------------------------------- */
+    /* ESTILOS CSS - VISOR Y CONTROLES FIJOS */
+    /* -------------------------------------- */
         html, body {
-            overflow-x: hidden !important; width: 100% !important; margin: 0 !important; padding: 0 !important; min-width: 100% !important;
+            overflow-x: hidden !important; 
+            width: 100% !important; 
+            margin: 0 !important;
+            padding: 0 !important;
+            min-width: 100% !important; 
+        }
+        *, *:before, *:after {
+            box-sizing: border-box !important;
         }
         body {
-            background-color: #1a1a1a; color: #f0f0f0; font-family: Arial, sans-serif; min-height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
         }
+
+        /* Ocultar elementos nativos */
         header, footer, .navbar, .masthead, .attribution {
-            display: none !important; height: 0 !important; visibility: hidden !important; max-height: 0 !important;
+            display: none !important;
+            height: 0 !important;
+            visibility: hidden !important;
+            max-height: 0 !important;
         }
+
+        /* 1. Visor de Manga (Responsive) */
         #manga-viewer {
-            width: 100vw !important; max-width: 100vw !important; margin: 0 auto; overflow-x: hidden; min-height: 100vh; padding-top: 5px; padding-bottom: 70px; cursor: pointer;
+            width: 100%;
+            max-width: 100%; 
+            margin: 0 auto; 
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-top: 70px; /* Espacio para el menú superior */
+            padding-bottom: 70px; /* Espacio para el menú inferior */
+            cursor: pointer; 
         }
         .manga-page {
-            display: block !important; max-width: 100vw !important; width: 100vw !important; height: auto !important; margin: 0 auto 10px auto; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: block;
+            max-width: 100%; 
+            width: 100%; 
+            height: auto; 
+            margin: 0 auto 10px auto; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        #bottom-controls {
-            position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background-color: #0d0d0d; padding: 8px 15px; z-index: 1000; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; gap: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s, visibility 0.3s;
+        
+        /* 2. Contenedores de botones (Superior e Inferior) */
+        #menu-container-top, #menu-container-bottom {
+            position: fixed;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: #0d0d0d;
+            z-index: 1000;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            opacity: 1; 
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 0.3s, transform 0.3s;
         }
-        #menu-container {
-            position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1001; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s, visibility 0.3s;
+
+        #menu-container-top {
+            top: 0;
+            transform: translateY(0);
         }
-        .visible-controls {
-            opacity: 0.9 !important; visibility: visible !important; pointer-events: auto !important;
+        #menu-container-bottom {
+            bottom: 0;
+            transform: translateY(0);
         }
-        #menu-toggle-btn-top {
-            background-color: #333; color: white; border: none; padding: 8px 12px; font-size: 1.2em; cursor: pointer; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+
+        /* CLASE 1: OCULTAR Y MOVER FUERA DE PANTALLA (Auto-scroll activo) */
+        .controls-off-screen-top {
+            transform: translateY(-100%);
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
         }
+        .controls-off-screen-bottom {
+            transform: translateY(100%);
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+        
+        /* 3. Botones de Menú Principales (☰ y ⚙️) */
+        .menu-toggle-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 20px; 
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            width: 100%; 
+        }
+        
+        /* 4. Barra de Despliegue (Flotante y Centrada) */
         #dropdown-menu { 
-            position: absolute; top: 0; left: 50%; transform: translate(-50%, 0); width: max-content; min-width: 250px; background-color: #1c1c1c; padding: 15px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7); flex-direction: column; gap: 10px; display: flex; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s, transform 0.3s;
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            width: 90%; 
+            max-width: 350px;
+            background-color: #1c1c1c; 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            flex-direction: column;
+            gap: 15px;
+            display: flex;
+            
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s;
         }
-        .visible { 
-            opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; transform: translate(-50%, 100%) !important; padding-top: 50px; 
+        
+        /* Clase para mostrar el menú flotante */
+        .visible-menu { 
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
         }
+
+        /* Estilos de botones internos (Autoajustables y grandes) */
         button {
-            padding: 8px; background-color: #555; color: white; border: none; cursor: pointer; border-radius: 4px; white-space: nowrap; font-size: 0.9em;
+            padding: 12px;
+            border: none;
+            cursor: pointer; 
+            border-radius: 4px; 
+            font-size: 1em;
+            width: 100%; 
         }
-        input[type="range"] { margin: 0 5px; width: 60px; cursor: pointer; }
-        #prev-chapter-btn, #next-chapter-btn { padding: 10px 15px; font-weight: bold; flex-grow: 1; }
-        #prev-chapter-btn { background-color: #FFC107; color: black; } 
-        #next-chapter-btn { background-color: #4CAF50; } 
-        #download-btn { background-color: #007bff; }
+        
         #menu-title {
-            font-size: 1.1em; font-weight: bold; text-align: center; border-bottom: 1px solid #444; padding-bottom: 8px; margin-bottom: 5px;
+            font-size: 1.3em; 
+            font-weight: bold; 
+            text-align: center; 
+            border-bottom: 1px solid #444; 
+            padding-bottom: 10px; 
+            margin-bottom: 10px;
         }
+        
+        /* Botones de navegación */
         #menu-buttons { display: flex; gap: 10px; width: 100%; }
+        #prev-chapter-btn { background-color: #FFC107; color: black; flex-grow: 1; } 
+        #next-chapter-btn { background-color: #4CAF50; flex-grow: 1; } 
+        #download-btn { background-color: #007bff; }
+        
+        /* Estilos de Auto-scroll (Controles responsivos) */
+        #scroll-controls-group {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        #autoscroll-label {
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+        }
+        #autoscroll-toggle {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+        #scroll-speed-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        input[type="range"] { 
+            margin: 0 10px; 
+            width: 60%; 
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div id="menu-container">
-    <button id="menu-toggle-btn-top">☰</button>
+<div id="menu-container-top">
+    <button id="menu-toggle-btn-top" class="menu-toggle-btn">☰ Menú</button>
+</div>
 
-    <div id="dropdown-menu"> 
-        
-        <div id="menu-title">Emperador Mágico - Capítulos 1-3</div>
-        
-        <div id="menu-buttons">
-            <button id="prev-chapter-btn" disabled>◀ Inicio de la Serie</button>
-        </div>
+<div id="dropdown-menu"> 
+    
+    <div id="menu-title">El Emperador Mágico - Capítulo 1-3</div>
+    
+    <div id="menu-buttons">
+        <button id="prev-chapter-btn">◀ Cap. Anterior (Portada)</button>
+        <button id="next-chapter-btn">➡️ Cap. Siguiente (4)</button>
+    </div>
 
-        <div id="menu-buttons">
-            <button id="next-chapter-btn">➡️ Cap. Siguiente (4)</button>
-        </div>
-
-        <div id="menu-buttons">
-            <button id="download-btn">⬇️ Descargar Cap. 1-3</button>
+    <button id="download-btn">⬇️ Descargar Cap. 1-3</button>
+    
+    <div id="scroll-controls-group">
+        <label id="autoscroll-label">
+            <input id="autoscroll-toggle" type="checkbox" /> Activar Auto-Scroll
+        </label>
+        <div id="scroll-speed-controls">
+            <label>Velocidad:</label>
+            <input id="scroll-speed" max="10" type="range" value="5" />
         </div>
     </div>
 </div>
 
 <main id="manga-viewer">
-    <div style="padding: 20px; text-align: center;">Cargando Capítulo Emperador Mágico...</div>
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo El Emperador Mágico...</div>
 </main>
 
-<div id="bottom-controls">
-    <label id="autoscroll-label">
-        <input id="autoscroll-toggle" type="checkbox" /> Auto-Scroll
-    </label>
-    <div id="scroll-speed-controls">
-        <label>Velocidad:</label>
-        <input id="scroll-speed" max="10" type="range" value="5" />
-    </div>
+<div id="menu-container-bottom">
+    <button id="menu-toggle-btn-bottom" class="menu-toggle-btn">⚙️ Menú</button>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. DECLARACIÓN DE VARIABLES Y ELEMENTOS HTML ---
         const viewer = document.getElementById('manga-viewer');
         const autoscrollToggle = document.getElementById('autoscroll-toggle');
         const scrollSpeedRange = document.getElementById('scroll-speed');
+        
         const dropdownMenu = document.getElementById('dropdown-menu'); 
-        const menuContainer = document.getElementById('menu-container'); 
-        const bottomControls = document.getElementById('bottom-controls'); 
-        const menuToggleButton = document.getElementById('menu-toggle-btn-top');
+        const menuContainerTop = document.getElementById('menu-container-top'); 
+        const menuContainerBottom = document.getElementById('menu-container-bottom'); 
+        const menuToggleBtnTop = document.getElementById('menu-toggle-btn-top');
+        const menuToggleBtnBottom = document.getElementById('menu-toggle-btn-bottom');
+        
         let menuOpen = false; 
         let scrollInterval;
-        let controlsVisible = false;
+        let controlsVisible = true; 
 
-        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 1-3 (Emperador Mágico) ⚙️ ---
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 1-3 DE EL EMPERADOR MÁGICO ⚙️ ---
         const chapterConfig = {
             id: '1-3',
-            prevId: 0, // 0 indica que no hay anterior
-            nextId: 4, 
-            
-            // Archivos de navegación (usando el prefijo "emperador-")
-            urlPrev: 'index-emperador.html', // Al inicio, regresa al índice de la serie
+            prevId: 'Portada', // Para mostrar en el botón
+            nextId: '4', // Para mostrar en el botón
+            urlPrev: 'emperador-portada.html', 
             urlNext: 'emperador-capitulo-4.html', 
             
-            // 🛑 REEMPLAZA ESTOS CON LOS ENLACES REALES DEL CAPÍTULO 1 AL 3 🛑
-            fileUrls: ['https://i.imgur.com/ogVCMnL.png',
-    'https://i.imgur.com/zw1WsD2.png',
-    'https://i.imgur.com/DHlJr9I.png',
-    'https://i.imgur.com/F3LnYdT.png',
-    'https://i.imgur.com/jDLQ8Ho.png',
-    'https://i.imgur.com/FzjEtvi.png',
-    'https://i.imgur.com/ufKX2Ch.png',
-    'https://i.imgur.com/Qoiy5oj.png',
-    'https://i.imgur.com/mdlCJer.png',
-    'https://i.imgur.com/0BNs9Pa.png',
-    'https://i.imgur.com/NX0Kp6U.png',
-    'https://i.imgur.com/YNF3e5V.png',
-    'https://i.imgur.com/rZm8CSb.png',
-    'https://i.imgur.com/CT2URk1.png',
-    'https://i.imgur.com/HMwx7af.png',
-    'https://i.imgur.com/5LLGXR5.png',
-    'https://i.imgur.com/rbNcSD5.png',
-    'https://i.imgur.com/16L8iMi.png',
-    'https://i.imgur.com/Xb2Dcm5.png',
-    'https://i.imgur.com/0D5pPbW.png',
-    'https://i.imgur.com/6cHwxu2.png',
-    'https://i.imgur.com/XSQVpA0.png',
-    'https://i.imgur.com/j4IMBXo.png',
-    'https://i.imgur.com/lD38Ukl.png',
-    'https://i.imgur.com/VT5I6O0.png',
-    'https://i.imgur.com/ZCQ7k2W.png',
-    'https://i.imgur.com/OrQ5dSj.png',
-    'https://i.imgur.com/FtDneXf.png',
-    'https://i.imgur.com/ynzVQhs.png',
-    'https://i.imgur.com/ebWSNSp.png',
-    'https://i.imgur.com/GnT1wAi.png',
-    'https://i.imgur.com/UqGd8GH.png',
-    'https://i.imgur.com/6qCIKPD.png',
-    'https://i.imgur.com/HoCV7cY.png',
-    'https://i.imgur.com/lEBclfh.png',
-    'https://i.imgur.com/CMhP7mB.png',
-    'https://i.imgur.com/of1InfW.png',
-    'https://i.imgur.com/NlwABnh.png',
-    'https://i.imgur.com/xuQEQKS.png',
-    'https://i.imgur.com/5wANYo6.png',
-    'https://i.imgur.com/7XQ5Lin.png',
-    'https://i.imgur.com/cxWmq9m.png',
-    'https://i.imgur.com/Uruh9iO.png',
-    'https://i.imgur.com/IhQbRe6.png',
-    'https://i.imgur.com/DjZaa4H.png',
-    'https://i.imgur.com/NoABtgZ.png',
-    'https://i.imgur.com/DnEVnBm.png',
-    'https://i.imgur.com/lT5updk.png',
-    'https://i.imgur.com/AZ2Rdbh.png',
-    'https://i.imgur.com/wXSmDVX.png',
-    'https://i.imgur.com/OEMziUa.png',
-    'https://i.imgur.com/vKr7k85.png',
-    'https://i.imgur.com/2iOPzXi.png',
-    'https://i.imgur.com/dS6IZtD.png',
-    'https://i.imgur.com/UtZGJre.png',
-    'https://i.imgur.com/d3yLxjQ.png',
-    'https://i.imgur.com/zmqM4HE.png',
-    'https://i.imgur.com/lVIp6ek.png',
-    'https://i.imgur.com/gMSa5Qg.png',
-    'https://i.imgur.com/XpwABTQ.png',
-    'https://i.imgur.com/854rwj9.png'],
-            // 🛑 URL DE DESCARGA DEL CAPÍTULO 1-3
-            urlDownload: 'https://drive.google.com/file/d/1P92y_4A0N969fdDBxTghA_Vc3GG2mIiR/view?usp=sharing'
+            // 🛑 ENLACES DE IMAGEN (ORDENADOS) 🛑
+            fileUrls: [
+                'https://i.imgur.com/bWIloI6.png',
+                'https://i.imgur.com/MxlWRZL.png',
+                'https://i.imgur.com/fn6pd2J.png',
+                'https://i.imgur.com/thenzWu.png',
+                'https://i.imgur.com/jhUTIJV.png',
+                'https://i.imgur.com/xvfwIH1.png',
+                'https://i.imgur.com/lkiKnvT.png',
+                'https://i.imgur.com/PtnUsxQ.png',
+                'https://i.imgur.com/wkTOQzK.png',
+                'https://i.imgur.com/eLEps86.png',
+                'https://i.imgur.com/Y5r38Ns.png',
+                'https://i.imgur.com/ceOA9uM.png',
+                'https://i.imgur.com/lv0wLUg.png',
+                'https://i.imgur.com/9MWlfv5.png',
+                'https://i.imgur.com/6CGXb5j.png',
+                'https://i.imgur.com/q6PRlt2.png',
+                'https://i.imgur.com/kGzFwJ0.png',
+                'https://i.imgur.com/y4JNDG1.png',
+                'https://i.imgur.com/KTC9FdN.png',
+                'https://i.imgur.com/jJjjxWD.png',
+                'https://i.imgur.com/aCG3rig.png',
+                'https://i.imgur.com/w6ozNx8.png',
+                'https://i.imgur.com/RhCHQBl.png',
+                'https://i.imgur.com/wCwvVTq.png',
+                'https://i.imgur.com/xNTPhWK.png',
+                'https://i.imgur.com/gbClXto.png',
+                'https://i.imgur.com/2dypqJP.png',
+                'https://i.imgur.com/QKX4KY8.png',
+                'https://i.imgur.com/1OTu0u5.png',
+                'https://i.imgur.com/XzUPSh1.png',
+                'https://i.imgur.com/YKfqAZA.png',
+                'https://i.imgur.com/wPBbhFe.png',
+                'https://i.imgur.com/wWRhmaX.png',
+                'https://i.imgur.com/jTTmczj.png',
+                'https://i.imgur.com/w75dPvd.png',
+                'https://i.imgur.com/Khu2YRj.png',
+                'https://i.imgur.com/ZPDVF94.png',
+                'https://i.imgur.com/gBr9YXd.png',
+                'https://i.imgur.com/6pRm7BE.png',
+                'https://i.imgur.com/Dx5NQgX.png',
+                'https://i.imgur.com/vSvJ1SS.png',
+                'https://i.imgur.com/TREmY1a.png',
+                'https://i.imgur.com/RRWLKAy.png',
+                'https://i.imgur.com/FjKY7kv.png',
+                'https://i.imgur.com/14xtdWD.png',
+                'https://i.imgur.com/9FvFPde.png',
+                'https://i.imgur.com/50bbFOf.png',
+                'https://i.imgur.com/PktROKU.png',
+                'https://i.imgur.com/G5OvD8A.png',
+                'https://i.imgur.com/5xubKRI.png',
+                'https://i.imgur.com/BLnn0IJ.png',
+                'https://i.imgur.com/dvQOL6n.png',
+                'https://i.imgur.com/yjXBfff.png',
+                'https://i.imgur.com/XOx3fHE.png',
+                'https://i.imgur.com/S1MsQT8.png',
+                'https://i.imgur.com/saCcKrJ.png',
+                'https://i.imgur.com/nz4Jv9a.png',
+                'https://i.imgur.com/LjH4J3Z.png',
+                'https://i.imgur.com/lTlLTLc.png',
+                'https://i.imgur.com/S8SYMbL.png',
+                'https://i.imgur.com/rjKxXCg.png'
+            ],
+            // 🛑 URL DE DESCARGA 🛑
+            urlDownload: 'https://drive.google.com/file/d/1Cv8qR7kz3uItRVIFfSizVlPQDmKnSJyc/view?usp=sharing'
         };
         
-        // Función para deshabilitar la navegación anterior si es el primer capítulo
-        if (chapterConfig.prevId === 0) {
-            document.getElementById('prev-chapter-btn').disabled = true;
-            document.getElementById('prev-chapter-btn').style.backgroundColor = '#555';
-        }
-        // ---------------------------------------------
+        // --- 2. FUNCIONES DE CONTROL DE VISIBILIDAD Y MOVIMIENTO ---
 
-        // [ ... Mismo JavaScript para controles, renderizado y scroll ... ]
-
-        const toggleControls = (e) => {
-            if (menuContainer.contains(e.target) || bottomControls.contains(e.target) || dropdownMenu.contains(e.target)) { return; }
-            if (menuOpen) { toggleMenu(); return; }
-            if (controlsVisible) {
-                menuContainer.classList.remove('visible-controls');
-                bottomControls.classList.remove('visible-controls');
-                if (scrollInterval) { clearInterval(scrollInterval); autoscrollToggle.checked = false; }
-            } else {
-                menuContainer.classList.add('visible-controls');
-                bottomControls.classList.add('visible-controls');
-            }
-            controlsVisible = !controlsVisible;
+        const hideControls = () => {
+            // Mueve los botones fuera de pantalla
+            menuContainerTop.classList.add('controls-off-screen-top');
+            menuContainerBottom.classList.add('controls-off-screen-bottom');
+            
+            controlsVisible = false;
         };
-        document.body.addEventListener('click', toggleControls); 
 
+        const showControls = () => { 
+            // Vuelve los botones a su posición fija visible
+            menuContainerTop.classList.remove('controls-off-screen-top');
+            menuContainerBottom.classList.remove('controls-off-screen-bottom');
+            
+            controlsVisible = true;
+        };
+        
+        // --- 3. LÓGICA DEL MENÚ DESPLEGABLE ---
+
+        const closeMenu = () => {
+            dropdownMenu.classList.remove('visible-menu');
+            menuOpen = false;
+            
+            // Si el auto-scroll sigue activo, los mantiene ocultos/fuera de pantalla
+            if (!autoscrollToggle.checked) {
+                showControls(); // Si Auto-Scroll está OFF, los botones fijos vuelven
+            }
+        }
+        
         const toggleMenu = () => {
-            menuOpen = !menuOpen;
             if (menuOpen) {
-                dropdownMenu.classList.add('visible'); 
-                menuContainer.classList.add('visible-controls'); 
-                bottomControls.classList.add('visible-controls');
-                controlsVisible = true; 
+                closeMenu();
             } else {
-                dropdownMenu.classList.remove('visible');
-                if (!controlsVisible) {
-                    menuContainer.classList.remove('visible-controls');
-                    bottomControls.classList.remove('visible-controls');
+                menuOpen = true;
+                dropdownMenu.classList.add('visible-menu'); 
+                
+                // Asegura que los botones fijos estén visibles cuando el menú está abierto
+                showControls(); 
+            }
+        };
+        
+        // Asignar el toggle a ambos botones de menú
+        menuToggleBtnTop.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            toggleMenu();
+        });
+        menuToggleBtnBottom.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            toggleMenu();
+        });
+        
+        dropdownMenu.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+        });
+        
+        // --- 4. LÓGICA DE CLIC, MOVIMIENTO Y SCROLL (Visor) ---
+        
+        const toggleViewerControls = (e) => {
+            // Ignora clics en los menús fijos o desplegable
+            if (menuContainerTop.contains(e.target) || menuContainerBottom.contains(e.target) || dropdownMenu.contains(e.target)) {
+                return;
+            }
+            
+            if (menuOpen) {
+                closeMenu(); 
+                return; 
+            }
+            
+            // CLAVE: SOLO REACCIONAR A CLIC CUANDO EL AUTO-SCROLL ESTÁ ACTIVO
+            if (autoscrollToggle.checked) {
+                if (controlsVisible) {
+                    hideControls(); // Clic mientras están visibles -> Mueve fuera
+                } else {
+                    showControls(); // Clic mientras están fuera -> Mueve de vuelta
                 }
             }
         };
-        menuToggleButton.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
-        dropdownMenu.addEventListener('click', (e) => { e.stopPropagation(); });
+        
+        document.body.addEventListener('click', toggleViewerControls); 
+        // No hay listeners para mousemove/scroll, los botones son fijos
+
+        // --- 5. RENDERIZADO Y AUTO-SCROLL ---
         
         const renderChapter = (config) => {
             viewer.innerHTML = ''; 
@@ -229,29 +416,17 @@
                 img.src = imageUrl; 
                 img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
                 img.className = 'manga-page';
-                img.loading = 'lazy';
-                img.style.width = '100%';
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
+                img.loading = 'lazy'; 
                 viewer.appendChild(img);
             });
-            setTimeout(() => {
-                const images = viewer.querySelectorAll('.manga-page');
-                images.forEach(img => {
-                    img.style.setProperty('width', '100vw', 'important');
-                    img.style.setProperty('max-width', '100vw', 'important');
-                    img.style.setProperty('height', 'auto', 'important');
-                    viewer.style.setProperty('width', '100vw', 'important');
-                    viewer.style.setProperty('max-width', '100vw', 'important');
-                });
-            }, 100); 
             window.scrollTo(0, 0); 
         };
         
         const startAutoscroll = (speedValue) => {
-            menuContainer.classList.add('visible-controls'); 
-            bottomControls.classList.add('visible-controls');
-            controlsVisible = true;
+            // Mueve los menús fuera de pantalla inmediatamente
+            closeMenu(); // Asegura que el menú desplegable esté cerrado
+            hideControls(); 
+            
             const intervalTime = 100 - (speedValue * 9); 
             const scrollAmount = 3; 
             if (scrollInterval) clearInterval(scrollInterval);
@@ -260,27 +435,35 @@
                 if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
                     autoscrollToggle.checked = false;
                     clearInterval(scrollInterval);
+                    
+                    showControls(); // Muestra los botones al terminar
                 }
             }, intervalTime);
         };
 
         autoscrollToggle.addEventListener('change', (e) => {
-            if (e.target.checked) { startAutoscroll(scrollSpeedRange.value); } else { if (scrollInterval) clearInterval(scrollInterval); }
+            if (e.target.checked) { 
+                startAutoscroll(scrollSpeedRange.value); 
+            } else { 
+                if (scrollInterval) clearInterval(scrollInterval); 
+                showControls(); // Muestra los botones al desactivar
+            }
         });
         scrollSpeedRange.addEventListener('input', (e) => {
             if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
         });
 
+        // --- 6. MANEJO DE BOTONES DE NAVEGACIÓN ---
+
         document.getElementById('download-btn').addEventListener('click', (e) => {
             e.stopPropagation(); 
             window.open(chapterConfig.urlDownload, '_blank');
+            closeMenu();
         });
         
         document.getElementById('prev-chapter-btn').addEventListener('click', (e) => {
             e.stopPropagation();
-            if (!e.currentTarget.disabled) {
-                window.location.href = chapterConfig.urlPrev;
-            }
+            window.location.href = chapterConfig.urlPrev;
         });
         
         document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
@@ -288,7 +471,10 @@
             window.location.href = chapterConfig.urlNext;
         });
         
+        // --- 7. INICIALIZACIÓN ---
+        
         renderChapter(chapterConfig);
+        showControls(); 
     });
 </script>
 </body>
