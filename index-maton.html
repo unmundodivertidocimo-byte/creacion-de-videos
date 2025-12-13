@@ -69,7 +69,7 @@
             justify-content: center;
             align-items: center;
 
-            opacity: 1; /* SIEMPRE VISIBLE POR DEFECTO */
+            opacity: 1; 
             visibility: visible;
             pointer-events: auto;
             transition: opacity 0.3s, transform 0.3s;
@@ -247,9 +247,9 @@
         
         let menuOpen = false; 
         let scrollInterval;
-        let controlsVisible = true; // SIEMPRE TRUE mientras Auto-Scroll esté OFF
+        let controlsVisible = true; 
 
-        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 78 (MANTÉN ESTOS DATOS) ⚙️ ---
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 78 (ACTUALIZADO) ⚙️ ---
         const chapterConfig = {
             id: 78,
             prevId: 77,
@@ -257,11 +257,71 @@
             urlPrev: 'maton-capitulo-77.html', 
             urlNext: 'maton-capitulo-79.html', 
             
-            // 🛑 TUS ENLACES DE IMAGEN 🛑
+            // 🛑 TUS ENLACES DE IMAGEN REORDENADOS 🛑
             fileUrls: [
-                'https://i.imgur.com/xgJ6qRj.png', 'https://i.imgur.com/ZxRy9zu.png', 'https://i.imgur.com/GHqyVmt.png', 'https://i.imgur.com/PvUis6E.png', 'https://i.imgur.com/5mNNqyV.png', 'https://i.imgur.com/VblFxoj.png', 'https://i.imgur.com/0nOgiX5.png', 'https://i.imgur.com/oEBoSCj.png', 'https://i.imgur.com/Q7gHKug.png', 'https://i.imgur.com/yxAt5Dh.png', 'https://i.imgur.com/lqkfGYc.png', 'https://i.imgur.com/9ed8oQy.png', 'https://i.imgur.com/bAqNRk1.png', 'https://i.imgur.com/RhC8HtN.png', 'https://i.imgur.com/cYxa4Xm.png', 'https://i.imgur.com/6Zl6US3.png', 'https://i.imgur.com/n0AtE1B.png', 'https://i.imgur.com/MfJrKwU.png', 'https://i.imgur.com/WCuGkNI.png', 'https://i.imgur.com/iCdRUMI.png', 'https://i.imgur.com/a2t1mzr.png', 'https://i.imgur.com/feeN5Bk.png', 'https://i.imgur.com/kYMupjq.png', 'https://i.imgur.com/Nt6HSfm.png', 'https://i.imgur.com/d5fDHz4.png', 'https://i.imgur.com/ceHybBi.png', 'https://i.imgur.com/Ai8nEHL.png', 'https://i.imgur.com/KFmmJ5v.png', 'https://i.imgur.com/glVZmEc.png', 'https://i.imgur.com/cNV4XlP.png', 'https://i.imgur.com/7aWuC2t.png', 'https://i.imgur.com/WJdO434.png', 'https://i.imgur.com/gV8JaZZ.png', 'https://i.imgur.com/Yde3PqK.png', 'https://i.imgur.com/EHgru7i.png', 'https://i.imgur.com/WAlpbU8.png', 'https://i.imgur.com/q54u1fS.png', 'https://i.imgur.com/y5oPcRS.png', 'https://i.imgur.com/YPBSLgB.png', 'https://i.imgur.com/vRmn71s.png', 'https://i.imgur.com/dMz938A.png', 'https://i.imgur.com/N8DGsNY.png', 'https://i.imgur.com/va3hyv7.png', 'https://i.imgur.com/VU6CGd9.png', 'https://i.imgur.com/NSmMwDt.png', 'https://i.imgur.com/jOM0dLC.png', 'https://i.imgur.com/8ZJEKdo.png', 'https://i.imgur.com/ao3o1uw.png', 'https://i.imgur.com/EldgPh1.png', 'https://i.imgur.com/NFRZmKq.png', 'https://i.imgur.com/2jAKzXC.png', 'https://i.imgur.com/lA96zsY.png', 'https://i.imgur.com/LIceV7z.png', 'https://i.imgur.com/heyqNvF.png', 'https://i.imgur.com/CDOVlgK.png', 'https://i.imgur.com/FOmVVYf.png', 'https://i.imgur.com/4JmNj25.png', 'https://i.imgur.com/DBvDry4.png', 'https://i.imgur.com/7qtOSFl.png', 'https://i.imgur.com/2Gi6SLl.png', 'https://i.imgur.com/dka948P.png', 'https://i.imgur.com/u9hC7Hw.png', 'https://i.imgur.com/8HlGBrt.png',
+                'https://i.imgur.com/YsSuJoI.png',
+                'https://i.imgur.com/8GoA52h.png',
+                'https://i.imgur.com/ATnujXm.png',
+                'https://i.imgur.com/irrCXyq.png',
+                'https://i.imgur.com/G2oAxG6.png',
+                'https://i.imgur.com/TV0YT90.png',
+                'https://i.imgur.com/LdUYaFH.png',
+                'https://i.imgur.com/AxZIRTV.png',
+                'https://i.imgur.com/b23o4sD.png',
+                'https://i.imgur.com/SBfg7NR.png',
+                'https://i.imgur.com/Z3pPSkT.png',
+                'https://i.imgur.com/0arMOmn.png',
+                'https://i.imgur.com/cDswMV9.png',
+                'https://i.imgur.com/dNuLNjB.png',
+                'https://i.imgur.com/N3yUWu9.png',
+                'https://i.imgur.com/QSwGRuD.png',
+                'https://i.imgur.com/9nf6KfS.png',
+                'https://i.imgur.com/G1so8gx.png',
+                'https://i.imgur.com/AUKHG3e.png',
+                'https://i.imgur.com/G7rtlkM.png',
+                'https://i.imgur.com/r8xFCV7.png',
+                'https://i.imgur.com/au5PWJv.png',
+                'https://i.imgur.com/y0XXNJe.png',
+                'https://i.imgur.com/iRYbgN8.png',
+                'https://i.imgur.com/cLsuFix.png',
+                'https://i.imgur.com/LubSPfp.png',
+                'https://i.imgur.com/r2MMJ7e.png',
+                'https://i.imgur.com/G7IBrnX.png',
+                'https://i.imgur.com/RsYMdHr.png',
+                'https://i.imgur.com/pofcl3B.png',
+                'https://i.imgur.com/1le6ceZ.png',
+                'https://i.imgur.com/Gt8cQxt.png',
+                'https://i.imgur.com/nSn88ZO.png',
+                'https://i.imgur.com/mSNJdHo.png',
+                'https://i.imgur.com/RNT1eOT.png',
+                'https://i.imgur.com/ISofWqO.png',
+                'https://i.imgur.com/RIuZbUz.png',
+                'https://i.imgur.com/3lddBbr.png',
+                'https://i.imgur.com/8bOXkiS.png',
+                'https://i.imgur.com/sKFke2k.png',
+                'https://i.imgur.com/9vGU0fZ.png',
+                'https://i.imgur.com/kjxw9FW.png',
+                'https://i.imgur.com/6k65Okx.png',
+                'https://i.imgur.com/Zh4ulEz.png',
+                'https://i.imgur.com/WkyHZXg.png',
+                'https://i.imgur.com/wQOAMwi.png',
+                'https://i.imgur.com/vjhqD3I.png',
+                'https://i.imgur.com/rHImKjl.png',
+                'https://i.imgur.com/l8f2R8m.png',
+                'https://i.imgur.com/FQ05fGL.png',
+                'https://i.imgur.com/zyntXKL.png',
+                'https://i.imgur.com/qe0GEKX.png',
+                'https://i.imgur.com/yflNqA5.png',
+                'https://i.imgur.com/qTOBFsj.png',
+                'https://i.imgur.com/js59b5n.png',
+                'https://i.imgur.com/4a2nRaD.png',
+                'https://i.imgur.com/6ny9gcj.png',
+                'https://i.imgur.com/q5J22Mc.png',
+                'https://i.imgur.com/dDrfmKI.png',
+                'https://i.imgur.com/PLssov4.png',
+                'https://i.imgur.com/rhVFsPJ.png'
             ],
-            // 🛑 TU URL DE DESCARGA 🛑
+            // 🛑 URL DE DESCARGA ORIGINAL 🛑
             urlDownload: 'https://drive.google.com/file/d/1zjksSm_NIHQaZgK3_aR0q7Lvge5A8rM1/view?usp=sharing'
         };
         
@@ -345,10 +405,7 @@
         };
         
         document.body.addEventListener('click', toggleViewerControls); 
-        // Desactivamos mousemove y scroll para que los botones permanezcan fijos cuando Auto-Scroll está OFF
-        // document.body.addEventListener('mousemove', showControls); 
-        // document.addEventListener('scroll', showControls);
-
+        // No hay listeners para mousemove/scroll, los botones son fijos
 
         // --- 5. RENDERIZADO Y AUTO-SCROLL ---
         
@@ -417,8 +474,6 @@
         // --- 7. INICIALIZACIÓN ---
         
         renderChapter(chapterConfig);
-        
-        // Los controles fijos están visibles al inicio por defecto (CSS) y showControls() asegura su estado.
         showControls(); 
     });
 </script>
