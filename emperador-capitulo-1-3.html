@@ -208,7 +208,7 @@
     
     <div id="menu-buttons">
         <button id="prev-chapter-btn">◀ Cap. Anterior (Portada)</button>
-        <button id="next-chapter-btn">➡️ Cap. Siguiente (4)</button>
+        <button id="next-chapter-btn">➡️ Cap. Siguiente (4-6)</button>
     </div>
 
     <button id="download-btn">⬇️ Descargar Cap. 1-3</button>
@@ -252,10 +252,10 @@
         // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 1-3 DE EL EMPERADOR MÁGICO ⚙️ ---
         const chapterConfig = {
             id: '1-3',
-            prevId: 'Portada', // Para mostrar en el botón
-            nextId: '4', // Para mostrar en el botón
+            prevId: 'Portada', 
+            nextId: '4-6', // ACTUALIZADO para apuntar al archivo que acabamos de crear.
             urlPrev: 'emperador-portada.html', 
-            urlNext: 'emperador-capitulo-4.html', 
+            urlNext: 'emperador-capitulo-4-6.html', // <--- CORRECCIÓN CLAVE
             
             // 🛑 ENLACES DE IMAGEN (ORDENADOS) 🛑
             fileUrls: [
@@ -479,4 +479,3 @@
 </script>
 </body>
 </html>
-
