@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Emperador Mágico - Capítulo 4-6 - Lector</title>
+    
+    <style>
+    /* -------------------------------------- */
+    /* ESTILOS CSS - VISOR Y CONTROLES FIJOS */
+    /* -------------------------------------- */
+        html, body {
+            overflow-x: hidden !important; 
+            width: 100% !important; 
+            margin: 0 !important;
+            padding: 0 !important;
+            min-width: 100% !important; 
+        }
+        *, *:before, *:after {
+            box-sizing: border-box !important;
+        }
+        body {
+            margin: 0;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Ocultar elementos nativos */
+        header, footer, .navbar, .masthead, .attribution {
+            display: none !important;
+            height: 0 !important;
+            visibility: hidden !important;
+            max-height: 0 !important;
+        }
+
+        /* 1. Visor de Manga (Responsive) */
+        #manga-viewer {
+            width: 100%;
+            max-width: 100%; 
+            margin: 0 auto; 
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-top: 70px; /* Espacio para el menú superior */
+            padding-bottom: 70px; /* Espacio para el menú inferior */
+            cursor: pointer; 
+        }
+        .manga-page {
+            display: block;
+            max-width: 100%; 
+            width: 100%; 
+            height: auto; 
+            margin: 0 auto 10px auto; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 2. Contenedores de botones (Superior e Inferior) */
+        #menu-container-top, #menu-container-bottom {
+            position: fixed;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: #0d0d0d;
+            z-index: 1000;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            opacity: 1; 
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #menu-container-top {
+            top: 0;
+            transform: translateY(0);
+        }
+        #menu-container-bottom {
+            bottom: 0;
+            transform: translateY(0);
+        }
+
+        /* CLASE 1: OCULTAR Y MOVER FUERA DE PANTALLA (Auto-scroll activo) */
+        .controls-off-screen-top {
+            transform: translateY(-100%);
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+        .controls-off-screen-bottom {
+            transform: translateY(100%);
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+        
+        /* 3. Botones de Menú Principales (☰ y ⚙️) */
+        .menu-toggle-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 20px; 
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            width: 100%; 
+        }
+        
+        /* 4. Barra de Despliegue (Flotante y Centrada) */
+        #dropdown-menu { 
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            width: 90%; 
+            max-width: 350px;
+            background-color: #1c1c1c; 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            flex-direction: column;
+            gap: 15px;
+            display: flex;
+            
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        /* Clase para mostrar el menú flotante */
+        .visible-menu { 
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+        }
+
+        /* Estilos de botones internos (Autoajustables y grandes) */
+        button {
+            padding: 12px;
+            border: none;
+            cursor: pointer; 
+            border-radius: 4px; 
+            font-size: 1em;
+            width: 100%; 
+        }
+        
+        #menu-title {
+            font-size: 1.3em; 
+            font-weight: bold; 
+            text-align: center; 
+            border-bottom: 1px solid #444; 
+            padding-bottom: 10px; 
+            margin-bottom: 10px;
+        }
+        
+        /* Botones de navegación */
+        #menu-buttons { display: flex; gap: 10px; width: 100%; }
+        #prev-chapter-btn { background-color: #FFC107; color: black; flex-grow: 1; } 
+        #next-chapter-btn { background-color: #4CAF50; flex-grow: 1; } 
+        #download-btn { background-color: #007bff; }
+        
+        /* Estilos de Auto-scroll (Controles responsivos) */
+        #scroll-controls-group {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        #autoscroll-label {
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+        }
+        #autoscroll-toggle {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+        #scroll-speed-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        input[type="range"] { 
+            margin: 0 10px; 
+            width: 60%; 
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="menu-container-top">
+    <button id="menu-toggle-btn-top" class="menu-toggle-btn">☰ Menú</button>
+</div>
+
+<div id="dropdown-menu"> 
+    
+    <div id="menu-title">El Emperador Mágico - Capítulo 4-6</div>
+    
+    <div id="menu-buttons">
+        <button id="prev-chapter-btn">◀ Cap. Anterior (1-3)</button>
+        <button id="next-chapter-btn">➡️ Cap. Siguiente (7)</button>
+    </div>
+
+    <button id="download-btn">⬇️ Descargar Cap. 4-6</button>
+    
+    <div id="scroll-controls-group">
+        <label id="autoscroll-label">
+            <input id="autoscroll-toggle" type="checkbox" /> Activar Auto-Scroll
+        </label>
+        <div id="scroll-speed-controls">
+            <label>Velocidad:</label>
+            <input id="scroll-speed" max="10" type="range" value="5" />
+        </div>
+    </div>
+</div>
+
+<main id="manga-viewer">
+    <div style="padding: 20px; text-align: center;">Cargando Capítulo El Emperador Mágico...</div>
+</main>
+
+<div id="menu-container-bottom">
+    <button id="menu-toggle-btn-bottom" class="menu-toggle-btn">⚙️ Menú</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. DECLARACIÓN DE VARIABLES Y ELEMENTOS HTML ---
+        const viewer = document.getElementById('manga-viewer');
+        const autoscrollToggle = document.getElementById('autoscroll-toggle');
+        const scrollSpeedRange = document.getElementById('scroll-speed');
+        
+        const dropdownMenu = document.getElementById('dropdown-menu'); 
+        const menuContainerTop = document.getElementById('menu-container-top'); 
+        const menuContainerBottom = document.getElementById('menu-container-bottom'); 
+        const menuToggleBtnTop = document.getElementById('menu-toggle-btn-top');
+        const menuToggleBtnBottom = document.getElementById('menu-toggle-btn-bottom');
+        
+        let menuOpen = false; 
+        let scrollInterval;
+        let controlsVisible = true; 
+
+        // --- ⚙️ CONFIGURACIÓN DEL CAPÍTULO 4-6 DE EL EMPERADOR MÁGICO ⚙️ ---
+        const chapterConfig = {
+            id: '4-6',
+            prevId: '1-3', 
+            nextId: '7', 
+            urlPrev: 'emperador-capitulo-1-3.html', 
+            urlNext: 'emperador-capitulo-7.html', 
+            
+            // 🛑 ENLACES DE IMAGEN (ORDENADOS) 🛑
+            fileUrls: [
+                'https://i.imgur.com/m9d8Rh2.png',
+                'https://i.imgur.com/oZ2oVhG.png',
+                'https://i.imgur.com/NN6OEOT.png',
+                'https://i.imgur.com/Nw8blsi.png',
+                'https://i.imgur.com/kLZvQSt.png',
+                'https://i.imgur.com/eWNdl82.png',
+                'https://i.imgur.com/hgrdjOG.png',
+                'https://i.imgur.com/Kd3zePM.png',
+                'https://i.imgur.com/6XfhwfS.png',
+                'https://i.imgur.com/Wwy90GE.png',
+                'https://i.imgur.com/0ji2iQJ.png',
+                'https://i.imgur.com/9Cd8vdG.png',
+                'https://i.imgur.com/W1Rr6zo.png',
+                'https://i.imgur.com/7FOYhZM.png',
+                'https://i.imgur.com/kuD7Faf.png',
+                'https://i.imgur.com/a8V1Utl.png',
+                'https://i.imgur.com/QMlpaqr.png',
+                'https://i.imgur.com/jAGnI6z.png',
+                'https://i.imgur.com/ShpkrQq.png',
+                'https://i.imgur.com/iHfU3GA.png',
+                'https://i.imgur.com/GcqeLuy.png',
+                'https://i.imgur.com/dIYB2kx.png',
+                'https://i.imgur.com/BeLmPdM.png',
+                'https://i.imgur.com/h5OlARZ.png',
+                'https://i.imgur.com/rM4mc2C.png',
+                'https://i.imgur.com/p4KrjsY.png',
+                'https://i.imgur.com/aFO2WPP.png',
+                'https://i.imgur.com/SSjSB6k.png',
+                'https://i.imgur.com/okRWyDL.png',
+                'https://i.imgur.com/kqsszic.png',
+                'https://i.imgur.com/MSmFoAO.png',
+                'https://i.imgur.com/MnHxvC8.png',
+                'https://i.imgur.com/mxi3Q5E.png',
+                'https://i.imgur.com/S2191Gn.png',
+                'https://i.imgur.com/i00so4V.png',
+                'https://i.imgur.com/nPsCwKX.png',
+                'https://i.imgur.com/LYWig0c.png',
+                'https://i.imgur.com/HMTDPge.png',
+                'https://i.imgur.com/577m27a.png',
+                'https://i.imgur.com/utGWIND.png',
+                'https://i.imgur.com/OcBoQuJ.png',
+                'https://i.imgur.com/nT4pPLs.png',
+                'https://i.imgur.com/LurWRZT.png',
+                'https://i.imgur.com/cAIMFDk.png',
+                'https://i.imgur.com/P21aMM8.png',
+                'https://i.imgur.com/Mo1yGQ3.png',
+                'https://i.imgur.com/C2i1Jho.png',
+                'https://i.imgur.com/JxF8NYV.png',
+                'https://i.imgur.com/azUa1cX.png',
+                'https://i.imgur.com/aIi84vJ.png'
+            ],
+            // 🛑 URL DE DESCARGA 🛑
+            urlDownload: 'https://drive.google.com/file/d/1NnZN7zRXGJgYHVdm813__D3stKUKsBEr/view?usp=sharing'
+        };
+        
+        // --- 2. FUNCIONES DE CONTROL DE VISIBILIDAD Y MOVIMIENTO ---
+
+        const hideControls = () => {
+            // Mueve los botones fuera de pantalla
+            menuContainerTop.classList.add('controls-off-screen-top');
+            menuContainerBottom.classList.add('controls-off-screen-bottom');
+            
+            controlsVisible = false;
+        };
+
+        const showControls = () => { 
+            // Vuelve los botones a su posición fija visible
+            menuContainerTop.classList.remove('controls-off-screen-top');
+            menuContainerBottom.classList.remove('controls-off-screen-bottom');
+            
+            controlsVisible = true;
+        };
+        
+        // --- 3. LÓGICA DEL MENÚ DESPLEGABLE ---
+
+        const closeMenu = () => {
+            dropdownMenu.classList.remove('visible-menu');
+            menuOpen = false;
+            
+            // Si el auto-scroll sigue activo, los mantiene ocultos/fuera de pantalla
+            if (!autoscrollToggle.checked) {
+                showControls(); // Si Auto-Scroll está OFF, los botones fijos vuelven
+            }
+        }
+        
+        const toggleMenu = () => {
+            if (menuOpen) {
+                closeMenu();
+            } else {
+                menuOpen = true;
+                dropdownMenu.classList.add('visible-menu'); 
+                
+                // Asegura que los botones fijos estén visibles cuando el menú está abierto
+                showControls(); 
+            }
+        };
+        
+        // Asignar el toggle a ambos botones de menú
+        menuToggleBtnTop.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            toggleMenu();
+        });
+        menuToggleBtnBottom.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            toggleMenu();
+        });
+        
+        dropdownMenu.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+        });
+        
+        // --- 4. LÓGICA DE CLIC, MOVIMIENTO Y SCROLL (Visor) ---
+        
+        const toggleViewerControls = (e) => {
+            // Ignora clics en los menús fijos o desplegable
+            if (menuContainerTop.contains(e.target) || menuContainerBottom.contains(e.target) || dropdownMenu.contains(e.target)) {
+                return;
+            }
+            
+            if (menuOpen) {
+                closeMenu(); 
+                return; 
+            }
+            
+            // CLAVE: SOLO REACCIONAR A CLIC CUANDO EL AUTO-SCROLL ESTÁ ACTIVO
+            if (autoscrollToggle.checked) {
+                if (controlsVisible) {
+                    hideControls(); // Clic mientras están visibles -> Mueve fuera
+                } else {
+                    showControls(); // Clic mientras están fuera -> Mueve de vuelta
+                }
+            }
+        };
+        
+        document.body.addEventListener('click', toggleViewerControls); 
+        // No hay listeners para mousemove/scroll, los botones son fijos
+
+        // --- 5. RENDERIZADO Y AUTO-SCROLL ---
+        
+        const renderChapter = (config) => {
+            viewer.innerHTML = ''; 
+            config.fileUrls.forEach((imageUrl, index) => {
+                const img = document.createElement('img');
+                img.src = imageUrl; 
+                img.alt = `Capítulo ${config.id} - Página ${index + 1}`;
+                img.className = 'manga-page';
+                img.loading = 'lazy'; 
+                viewer.appendChild(img);
+            });
+            window.scrollTo(0, 0); 
+        };
+        
+        const startAutoscroll = (speedValue) => {
+            // Mueve los menús fuera de pantalla inmediatamente
+            closeMenu(); // Asegura que el menú desplegable esté cerrado
+            hideControls(); 
+            
+            const intervalTime = 100 - (speedValue * 9); 
+            const scrollAmount = 3; 
+            if (scrollInterval) clearInterval(scrollInterval);
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, scrollAmount);
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    autoscrollToggle.checked = false;
+                    clearInterval(scrollInterval);
+                    
+                    showControls(); // Muestra los botones al terminar
+                }
+            }, intervalTime);
+        };
+
+        autoscrollToggle.addEventListener('change', (e) => {
+            if (e.target.checked) { 
+                startAutoscroll(scrollSpeedRange.value); 
+            } else { 
+                if (scrollInterval) clearInterval(scrollInterval); 
+                showControls(); // Muestra los botones al desactivar
+            }
+        });
+        scrollSpeedRange.addEventListener('input', (e) => {
+            if (autoscrollToggle.checked) { startAutoscroll(e.target.value); }
+        });
+
+        // --- 6. MANEJO DE BOTONES DE NAVEGACIÓN ---
+
+        document.getElementById('download-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            window.open(chapterConfig.urlDownload, '_blank');
+            closeMenu();
+        });
+        
+        document.getElementById('prev-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlPrev;
+        });
+        
+        document.getElementById('next-chapter-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = chapterConfig.urlNext;
+        });
+        
+        // --- 7. INICIALIZACIÓN ---
+        
+        renderChapter(chapterConfig);
+        showControls(); 
+    });
+</script>
+</body>
+</html>
